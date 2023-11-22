@@ -1,16 +1,21 @@
 import mongoose, { Error } from "mongoose";
 
+let conn: typeof mongoose;
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
-      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bnnzqre.mongodb.net/?retryWrites=true&w=majority`
+    conn = await mongoose.connect(
+      process.env.DB_URI || "mongodb://localhost:27017/database"
     );
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error: Error | any | unknown) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
     process.exit(1);
+  } finally {
+    return { conn };
   }
 };
 
 export default connectDB;
+export { conn as DB };
