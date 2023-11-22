@@ -191,3 +191,39 @@ export const GetUsersController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const GetAllowedUsersController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const user = await UserModel.findOne({ email });
+
+    const users = await PrivacyUserModel.find({
+      userId: user?._id,
+      allowed: true,
+    })
+      .populate("otherUserId")
+      .lean();
+
+    const allowedUsers = users.map((user: { otherUserId: any }) => {
+      return {
+        _id: user.otherUserId._id,
+        name: user.otherUserId.name,
+        email: user.otherUserId.email,
+        userName: user.otherUserId.userName,
+        profileImage: user.otherUserId.profileImage,
+        coverImage: user.otherUserId.coverImage,
+        bio: user.otherUserId.bio,
+        dob: user.otherUserId.dob,
+        location: user.otherUserId.location,
+        website: user.otherUserId.website,
+      };
+    });
+
+    res
+      .status(200)
+      .json({ message: "Users fetched successfully!", users: allowedUsers });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
