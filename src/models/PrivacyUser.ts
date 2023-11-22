@@ -11,7 +11,7 @@ const PrivacyUser = new Schema({
     required: true,
     default: false,
   },
-  privacyUserId: {
+  otherUserId: {
     type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
