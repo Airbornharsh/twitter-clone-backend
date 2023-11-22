@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import UserModel from "../models/User";
 import PrivacyUserModel from "../models/PrivacyUser";
 import { ErrorResponse } from "../helpers/ErrorHelper";
+import { ObjectId } from "mongoose";
 
 export const AddUserController: RequestHandler = async (req, res) => {
   try {
@@ -99,6 +100,94 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
 
     res.status(200).json({ message: "Updated the User" });
   } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const GetUsersController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const user = await UserModel.findOne({ email });
+
+    const oldUsers = await UserModel.find({
+      email: { $ne: email },
+    }).lean();
+
+    const userIds: string[] = [];
+
+    oldUsers.forEach((user: { _id: any }) => {
+      userIds.push(user._id.toString());
+    });
+
+    const users = await PrivacyUserModel.find({
+      userId: user?._id,
+    })
+      .populate("otherUserId")
+      .lean();
+
+    const addedUsers: string[] = [];
+
+    const tempUsers = users.map((user: { allowed: any; otherUserId: any }) => {
+      addedUsers.push(user.otherUserId._id.toString());
+      if (!user.allowed) {
+        return {
+          _id: user.otherUserId._id,
+          allowed: user.allowed,
+          name: "Private User",
+          userName: "Private User",
+          profileImage: "",
+          coverImage: "",
+          bio: "",
+          dob: "",
+          location: "",
+          website: "",
+        };
+      } else {
+        return {
+          _id: user.otherUserId._id,
+          allowed: user.allowed,
+          name: user.otherUserId.name,
+          userName: user.otherUserId.userName,
+          profileImage: user.otherUserId.profileImage,
+          coverImage: user.otherUserId.coverImage,
+          bio: user.otherUserId.bio,
+          dob: user.otherUserId.dob,
+          location: user.otherUserId.location,
+          website: user.otherUserId.website,
+        };
+      }
+    });
+
+    const filteredUsers = userIds.filter((u: string) => {
+      return !addedUsers.includes(u);
+    });
+
+    const newUsers = await UserModel.find({
+      _id: { $in: filteredUsers },
+    }).lean();
+
+    const tempNewUsers = newUsers.map((user: { _id: any }) => {
+      return {
+        _id: user._id,
+        allowed: false,
+        name: "Private User",
+        userName: "Private User",
+        profileImage: "",
+        coverImage: "",
+        bio: "",
+        dob: "",
+        location: "",
+        website: "",
+      };
+    });
+
+    const allUsers = [...tempUsers, ...tempNewUsers];
+
+    res
+      .status(200)
+      .json({ message: "Users fetched successfully!", users: allUsers });
+  } catch (e: any | unknown) {
     ErrorResponse(res, 500, e);
   }
 };
