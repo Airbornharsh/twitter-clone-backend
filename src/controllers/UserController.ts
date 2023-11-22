@@ -73,3 +73,32 @@ export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const UpdateUserHandler: RequestHandler = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const { name, age, profileImage, coverImage, bio, dob, location, website } =
+      req.body;
+
+    const data = {};
+
+    // name && (data.name = name);
+    Object.assign(
+      data,
+      name && { name },
+      age && { age },
+      profileImage && { profileImage },
+      coverImage && { coverImage },
+      bio && { bio },
+      dob && { dob },
+      location && { location },
+      website && { website }
+    );
+
+    await UserModel.findOneAndUpdate({ email }, data);
+
+    res.status(200).json({ message: "Updated the User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
