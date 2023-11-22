@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   AddUserController,
   GetAllowedUsersController,
+  GetBlockedUsersController,
   GetOtherUserController,
   GetUserController,
   GetUsersController,
@@ -14,6 +15,7 @@ const User = (user: Router) => {
   user.get("/", GetOtherUserController);
   user.get("/list/", GetUsersController);
   user.get("/allowed/", GetAllowedUsersController);
+  user.get("/blocked/", GetBlockedUsersController);
   user.post("/", AddUserController);
   user.put("/", UpdateUserHandler);
   user.put("/privacy/", UpdatePrivacyHandler);
