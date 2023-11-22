@@ -1,6 +1,7 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import UserModel from "../models/User";
 import PrivacyUserModel from "../models/PrivacyUser";
+import { ErrorResponse } from "../helpers/ErrorHelper";
 
 export const AddUserController: RequestHandler = async (req, res) => {
   try {
@@ -9,8 +10,7 @@ export const AddUserController: RequestHandler = async (req, res) => {
     const result = await newUser.save();
     res.status(200).json({ message: "User added successfully!", user: result });
   } catch (e: any | unknown) {
-    console.log(e);
-    res.status(500).json({ message: e.message });
+    ErrorResponse(res, 500, e);
   }
 };
 
@@ -21,8 +21,7 @@ export const GetUserController: RequestHandler = async (req, res) => {
     const user = await UserModel.findOne({ email });
     res.status(200).json({ message: "User fetched successfully!", user });
   } catch (e: any | unknown) {
-    console.log(e);
-    res.status(500).json({ message: e.message });
+    ErrorResponse(res, 500, e);
   }
 };
 
@@ -58,7 +57,6 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
       res.status(401).json({ message: "User not allowed!" });
     }
   } catch (e: any | unknown) {
-    console.log(e);
-    res.status(500).json({ message: e.message });
+    ErrorResponse(res, 500, e);
   }
 };
