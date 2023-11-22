@@ -23,6 +23,7 @@ const Users = new Schema({
   private: {
     type: Boolean,
     required: false,
+    default: false,
   },
   profileImage: {
     type: String,
