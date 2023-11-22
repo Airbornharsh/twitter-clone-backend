@@ -7,3 +7,10 @@ export const AddUserController = async (req: Request, res: Response) => {
   const result = await newUser.save();
   res.status(200).json({ message: "User added successfully!", user: result });
 };
+
+export const GetUserController = async (req: Request, res: Response) => {
+  const email = req.params.email;
+
+  const user = await UserModel.findOne({ email });
+  res.status(200).json({ message: "User fetched successfully!", user });
+};
