@@ -222,20 +222,72 @@ export const GetAllowedUsersController: RequestHandler = async (req, res) => {
       .populate("otherUserId")
       .lean();
 
-    const allowedUsers = users.map((user: { otherUserId: any }) => {
-      return {
-        _id: user.otherUserId._id,
-        name: user.otherUserId.name,
-        email: user.otherUserId.email,
-        userName: user.otherUserId.userName,
-        profileImage: user.otherUserId.profileImage,
-        coverImage: user.otherUserId.coverImage,
-        bio: user.otherUserId.bio,
-        dob: user.otherUserId.dob,
-        location: user.otherUserId.location,
-        website: user.otherUserId.website,
-      };
+    const privateIds: string[] = [];
+
+    // const tempUsers = [];
+    let allowedUsers: any[] = [];
+
+    users.forEach((user: { otherUserId: any }) => {
+      if (!user.otherUserId.private) {
+        allowedUsers.push({
+          _id: user.otherUserId._id,
+          name: user.otherUserId.name,
+          email: user.otherUserId.email,
+          private: user.otherUserId.private,
+          userName: user.otherUserId.userName,
+          profileImage: user.otherUserId.profileImage,
+          coverImage: user.otherUserId.coverImage,
+          bio: user.otherUserId.bio,
+          dob: user.otherUserId.dob,
+          location: user.otherUserId.location,
+          website: user.otherUserId.website,
+        });
+      } else {
+        privateIds.push(user.otherUserId._id.toString());
+      }
     });
+
+    const tempPrivacyUsers = await PrivacyUserModel.find({
+      otherUserId: { $in: privateIds },
+    })
+      .populate("otherUserId")
+      .lean();
+
+    const tempUsers = tempPrivacyUsers.map(
+      (user: { allowed: any; otherUserId: any }) => {
+        if (!user.allowed) {
+          return {
+            _id: user.otherUserId._id,
+            allowed: user.allowed,
+            private: user.otherUserId.private,
+            name: "Private User",
+            userName: "Private User",
+            profileImage: "",
+            coverImage: "",
+            bio: "",
+            dob: "",
+            location: "",
+            website: "",
+          };
+        } else {
+          return {
+            _id: user.otherUserId._id,
+            allowed: user.allowed,
+            private: user.otherUserId.private,
+            name: user.otherUserId.name,
+            userName: user.otherUserId.userName,
+            profileImage: user.otherUserId.profileImage,
+            coverImage: user.otherUserId.coverImage,
+            bio: user.otherUserId.bio,
+            dob: user.otherUserId.dob,
+            location: user.otherUserId.location,
+            website: user.otherUserId.website,
+          };
+        }
+      }
+    );
+
+    allowedUsers = [...allowedUsers, ...tempUsers];
 
     res
       .status(200)
@@ -258,20 +310,72 @@ export const GetBlockedUsersController: RequestHandler = async (req, res) => {
       .populate("otherUserId")
       .lean();
 
-    const blockedUsers = users.map((user: { otherUserId: any }) => {
-      return {
-        _id: user.otherUserId._id,
-        name: user.otherUserId.name,
-        email: user.otherUserId.email,
-        userName: user.otherUserId.userName,
-        profileImage: user.otherUserId.profileImage,
-        coverImage: user.otherUserId.coverImage,
-        bio: user.otherUserId.bio,
-        dob: user.otherUserId.dob,
-        location: user.otherUserId.location,
-        website: user.otherUserId.website,
-      };
+    const privateIds: string[] = [];
+
+    // const tempUsers = [];
+    let blockedUsers: any[] = [];
+
+    users.forEach((user: { otherUserId: any }) => {
+      if (!user.otherUserId.private) {
+        blockedUsers.push({
+          _id: user.otherUserId._id,
+          name: user.otherUserId.name,
+          email: user.otherUserId.email,
+          private: user.otherUserId.private,
+          userName: user.otherUserId.userName,
+          profileImage: user.otherUserId.profileImage,
+          coverImage: user.otherUserId.coverImage,
+          bio: user.otherUserId.bio,
+          dob: user.otherUserId.dob,
+          location: user.otherUserId.location,
+          website: user.otherUserId.website,
+        });
+      } else {
+        privateIds.push(user.otherUserId._id.toString());
+      }
     });
+
+    const tempPrivacyUsers = await PrivacyUserModel.find({
+      otherUserId: { $in: privateIds },
+    })
+      .populate("otherUserId")
+      .lean();
+
+    const tempUsers = tempPrivacyUsers.map(
+      (user: { allowed: any; otherUserId: any }) => {
+        if (!user.allowed) {
+          return {
+            _id: user.otherUserId._id,
+            allowed: user.allowed,
+            private: user.otherUserId.private,
+            name: "Private User",
+            userName: "Private User",
+            profileImage: "",
+            coverImage: "",
+            bio: "",
+            dob: "",
+            location: "",
+            website: "",
+          };
+        } else {
+          return {
+            _id: user.otherUserId._id,
+            allowed: user.allowed,
+            private: user.otherUserId.private,
+            name: user.otherUserId.name,
+            userName: user.otherUserId.userName,
+            profileImage: user.otherUserId.profileImage,
+            coverImage: user.otherUserId.coverImage,
+            bio: user.otherUserId.bio,
+            dob: user.otherUserId.dob,
+            location: user.otherUserId.location,
+            website: user.otherUserId.website,
+          };
+        }
+      }
+    );
+
+    blockedUsers = [...blockedUsers, ...tempUsers];
 
     res
       .status(200)
