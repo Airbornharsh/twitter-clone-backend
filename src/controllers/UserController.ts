@@ -60,3 +60,16 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const privacy = req.body.private;
+
+    await UserModel.findOneAndUpdate({ email }, { private: privacy });
+
+    res.status(200).json({ message: "Updated the Private" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
