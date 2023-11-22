@@ -133,6 +133,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
         return {
           _id: user.otherUserId._id,
           allowed: user.allowed,
+          private: user.otherUserId.private,
           name: "Private User",
           userName: "Private User",
           profileImage: "",
@@ -146,6 +147,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
         return {
           _id: user.otherUserId._id,
           allowed: user.allowed,
+          private: user.otherUserId.private,
           name: user.otherUserId.name,
           userName: user.otherUserId.userName,
           profileImage: user.otherUserId.profileImage,
@@ -166,19 +168,35 @@ export const GetUsersController: RequestHandler = async (req, res) => {
       _id: { $in: filteredUsers },
     }).lean();
 
-    const tempNewUsers = newUsers.map((user: { _id: any }) => {
-      return {
-        _id: user._id,
-        allowed: false,
-        name: "Private User",
-        userName: "Private User",
-        profileImage: "",
-        coverImage: "",
-        bio: "",
-        dob: "",
-        location: "",
-        website: "",
-      };
+    const tempNewUsers = newUsers.map((user: any) => {
+      if (user.private)
+        return {
+          _id: user._id,
+          allowed: false,
+          private: user.private,
+          name: "Private User",
+          userName: "Private User",
+          profileImage: "",
+          coverImage: "",
+          bio: "",
+          dob: "",
+          location: "",
+          website: "",
+        };
+      else
+        return {
+          _id: user._id,
+          allowed: false,
+          private: user.private,
+          name: user.name,
+          userName: user.userName,
+          profileImage: user.profileImage,
+          coverImage: user.coverImage,
+          bio: user.bio,
+          dob: user.dob,
+          location: user.location,
+          website: user.website,
+        };
     });
 
     const allUsers = [...tempUsers, ...tempNewUsers];
