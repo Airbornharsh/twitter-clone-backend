@@ -10,13 +10,13 @@ import {
 } from "../controllers/UserController";
 
 const User = (user: Router) => {
+  user.get("/", GetUserController);
+  user.get("/", GetOtherUserController);
+  user.get("/list/", GetUsersController);
+  user.get("/allowed/", GetAllowedUsersController);
   user.post("/", AddUserController);
-  user.put("/:email", UpdateUserHandler);
-  user.get("/:email", GetUserController);
-  user.get("/list/:email", GetUsersController);
-  user.put("/privacy/:email", UpdatePrivacyHandler);
-  user.get("/allowed/:email", GetAllowedUsersController);
-  user.get("/:email/:otherEmail", GetOtherUserController);
+  user.put("/", UpdateUserHandler);
+  user.put("/privacy/", UpdatePrivacyHandler);
 };
 
 export default User;
