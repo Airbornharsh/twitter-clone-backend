@@ -16,7 +16,7 @@ export const AddUserController: RequestHandler = async (req, res) => {
 
 export const GetUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
 
     const user = await UserModel.findOne({ email });
     res.status(200).json({ message: "User fetched successfully!", user });
@@ -27,7 +27,7 @@ export const GetUserController: RequestHandler = async (req, res) => {
 
 export const GetOtherUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
     const otherEmail = req.params.otherEmail;
 
     const user = await UserModel.findOne({ email });
@@ -63,7 +63,7 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
 
 export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
     const privacy = req.body.private;
 
     await UserModel.findOneAndUpdate({ email }, { private: privacy });
@@ -76,7 +76,7 @@ export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
 
 export const UpdateUserHandler: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
     const { name, age, profileImage, coverImage, bio, dob, location, website } =
       req.body;
 
@@ -105,7 +105,7 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
 
 export const GetUsersController: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
 
     const user = await UserModel.findOne({ email });
 
@@ -211,7 +211,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
 
 export const GetAllowedUsersController: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
 
     const user = await UserModel.findOne({ email });
 
@@ -299,7 +299,7 @@ export const GetAllowedUsersController: RequestHandler = async (req, res) => {
 
 export const GetBlockedUsersController: RequestHandler = async (req, res) => {
   try {
-    const email = req.query.email;
+    const email = req.get("email");
 
     const user = await UserModel.findOne({ email });
 

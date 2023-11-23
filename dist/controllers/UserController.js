@@ -21,7 +21,7 @@ const AddUserController = async (req, res) => {
 exports.AddUserController = AddUserController;
 const GetUserController = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const user = await User_1.default.findOne({ email });
         res.status(200).json({ message: "User fetched successfully!", user });
     }
@@ -32,7 +32,7 @@ const GetUserController = async (req, res) => {
 exports.GetUserController = GetUserController;
 const GetOtherUserController = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const otherEmail = req.params.otherEmail;
         const user = await User_1.default.findOne({ email });
         const otherUser = await User_1.default.findOne({ email: otherEmail });
@@ -65,7 +65,7 @@ const GetOtherUserController = async (req, res) => {
 exports.GetOtherUserController = GetOtherUserController;
 const UpdatePrivacyHandler = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const privacy = req.body.private;
         await User_1.default.findOneAndUpdate({ email }, { private: privacy });
         res.status(200).json({ message: "Updated the Private" });
@@ -77,7 +77,7 @@ const UpdatePrivacyHandler = async (req, res) => {
 exports.UpdatePrivacyHandler = UpdatePrivacyHandler;
 const UpdateUserHandler = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const { name, age, profileImage, coverImage, bio, dob, location, website } = req.body;
         const data = {};
         // name && (data.name = name);
@@ -92,7 +92,7 @@ const UpdateUserHandler = async (req, res) => {
 exports.UpdateUserHandler = UpdateUserHandler;
 const GetUsersController = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const user = await User_1.default.findOne({ email });
         const oldUsers = await User_1.default.find({
             email: { $ne: email },
@@ -188,7 +188,7 @@ const GetUsersController = async (req, res) => {
 exports.GetUsersController = GetUsersController;
 const GetAllowedUsersController = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const user = await User_1.default.findOne({ email });
         const users = await PrivacyUser_1.default.find({
             userId: user?._id,
@@ -268,7 +268,7 @@ const GetAllowedUsersController = async (req, res) => {
 exports.GetAllowedUsersController = GetAllowedUsersController;
 const GetBlockedUsersController = async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.get("email");
         const user = await User_1.default.findOne({ email });
         const users = await PrivacyUser_1.default.find({
             userId: user?._id,
