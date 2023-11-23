@@ -6,6 +6,14 @@ import { ErrorResponse } from "../helpers/ErrorHelper";
 export const AddUserController: RequestHandler = async (req, res) => {
   try {
     const user = req.body;
+
+    const checkUser = await UserModel.findOne({ email: user.email });
+
+    if (checkUser) {
+      res.status(200).json({ message: "User already exists!" });
+      return;
+    }
+
     const newUser = new UserModel(user);
     const result = await newUser.save();
     res.status(200).json({ message: "User added successfully!", user: result });

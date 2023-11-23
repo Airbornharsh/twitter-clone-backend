@@ -10,6 +10,11 @@ const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const AddUserController = async (req, res) => {
     try {
         const user = req.body;
+        const checkUser = await User_1.default.findOne({ email: user.email });
+        if (checkUser) {
+            res.status(200).json({ message: "User already exists!" });
+            return;
+        }
         const newUser = new User_1.default(user);
         const result = await newUser.save();
         res.status(200).json({ message: "User added successfully!", user: result });
