@@ -17,9 +17,9 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// app.use("/api", router);
+app.use("/api", router);
 
-// Route(router);
+Route(router);
 // client
 //   .connect()
 //   .then(() => {
