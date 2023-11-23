@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/index.ts",
+  "main": "./index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node src/index.ts",
