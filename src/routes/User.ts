@@ -12,7 +12,7 @@ import {
 
 const User = (user: Router) => {
   user.get("/", GetUserController);
-  user.get("/:otherEmail", GetOtherUserController);
+  user.get("/other/:otherEmail", GetOtherUserController);
   user.get("/list/", GetUsersController);
   user.get("/allowed/", GetAllowedUsersController);
   user.get("/blocked/", GetBlockedUsersController);
