@@ -13,7 +13,7 @@ app.use(express.json());
 
 connectDB();
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
