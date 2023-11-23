@@ -13,9 +13,13 @@ app.use(express.json());
 
 connectDB();
 
-app.use("/api", router);
+app.get("/api", (req, res) => {
+  res.send("Hello World!");
+});
 
-Route(router);
+// app.use("/api", router);
+
+// Route(router);
 // client
 //   .connect()
 //   .then(() => {
