@@ -28,7 +28,7 @@ export const GetUserController: RequestHandler = async (req, res) => {
 export const GetOtherUserController: RequestHandler = async (req, res) => {
   try {
     const email = req.query.email;
-    const otherEmail = req.query.otherEmail;
+    const otherEmail = req.params.otherEmail;
 
     const user = await UserModel.findOne({ email });
     const otherUser = await UserModel.findOne({ email: otherEmail });

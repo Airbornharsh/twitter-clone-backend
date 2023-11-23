@@ -33,7 +33,7 @@ exports.GetUserController = GetUserController;
 const GetOtherUserController = async (req, res) => {
     try {
         const email = req.query.email;
-        const otherEmail = req.query.otherEmail;
+        const otherEmail = req.params.otherEmail;
         const user = await User_1.default.findOne({ email });
         const otherUser = await User_1.default.findOne({ email: otherEmail });
         if (!otherUser?.private) {
