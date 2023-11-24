@@ -33,11 +33,11 @@ const UpdateAllowingUserController = async (req, res) => {
             return;
         }
         await user.updateOne({
-            $addToSet: { allowed: otherUserId },
+            $addToSet: { allowed: otherUserId, following: otherUserId },
             $pull: { pending: otherUserId, blocked: otherUserId },
         });
         await otherUser.updateOne({
-            $addToSet: { allowedBy: user._id },
+            $addToSet: { allowedBy: user._id, followers: user._id },
             $pull: { pendingBy: user._id, blockedBy: user._id },
         });
         res.status(200).json({ message: "Updated the Allowed User" });
@@ -92,11 +92,21 @@ const UpdateBlockingUserController = async (req, res) => {
         }
         await user.updateOne({
             $addToSet: { blocked: otherUserId },
-            $pull: { pending: otherUserId, allowed: otherUserId },
+            $pull: {
+                pending: otherUserId,
+                allowed: otherUserId,
+                following: otherUserId,
+                followers: otherUserId,
+            },
         });
         await otherUser.updateOne({
             $addToSet: { blockedBy: user._id },
-            $pull: { pendingBy: user._id, allowedBy: user._id },
+            $pull: {
+                pendingBy: user._id,
+                allowedBy: user._id,
+                following: user._id,
+                followers: user._id,
+            },
         });
         res.status(200).json({ message: "Updated the Blocked User" });
     }
@@ -146,6 +156,27 @@ const UpdateFollowingUserController = async (req, res) => {
             res.status(404).json({ message: "User not found!" });
             return;
         }
+        if (otherUser.private) {
+            let userCheck = false;
+            user.allowed.forEach((u) => {
+                if (u.toString() === otherUser._id.toString()) {
+                    userCheck = true;
+                    return;
+                }
+            });
+            if (!userCheck) {
+                await user.updateOne({
+                    $addToSet: { pending: otherUserId },
+                });
+                await otherUser.updateOne({
+                    $addToSet: { pendingBy: user._id },
+                });
+                res
+                    .status(200)
+                    .json({ message: "Updated the Followed User", pending: true });
+                return;
+            }
+        }
         await user.updateOne({
             $addToSet: { following: otherUserId },
             $pull: {
@@ -162,7 +193,9 @@ const UpdateFollowingUserController = async (req, res) => {
                 pendingBy: user._id,
             },
         });
-        res.status(200).json({ message: "Updated the Followed User" });
+        res
+            .status(200)
+            .json({ message: "Updated the Followed User", pending: false });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
