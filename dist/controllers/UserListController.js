@@ -17,10 +17,59 @@ const GetUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             email: { $ne: email },
-            private: false,
             name: { $regex: search, $options: "i" },
         });
-        res.status(200).json({ message: "Users fetched successfully!", users });
+        const tempUsers = users.map((user) => {
+            if (!user.private)
+                return {
+                    _id: user._id,
+                    name: user.name,
+                    userName: user.userName,
+                    email: user.email,
+                    bio: user.bio,
+                    profieImage: user.profileImage,
+                    coverImage: user.coverImage,
+                    dob: user.dob,
+                    location: user.location,
+                    website: user.website,
+                    private: user.private,
+                    followers: user.followers,
+                    following: user.following,
+                    allowed: user.allowed,
+                    allowedBy: user.allowedBy,
+                    blocked: user.blocked,
+                    blockedBy: user.blockedBy,
+                    pending: user.pending,
+                    pendingBy: user.pendingBy,
+                    createdAt: user.createdAt,
+                };
+            else
+                return {
+                    _id: user._id,
+                    name: user.name,
+                    userName: user.userName,
+                    email: "",
+                    bio: "",
+                    profieImage: "",
+                    coverImage: "",
+                    dob: "",
+                    location: "",
+                    website: "",
+                    private: true,
+                    followers: [],
+                    following: [],
+                    allowed: user.allowed,
+                    allowedBy: [],
+                    blocked: user.blocked,
+                    blockedBy: [],
+                    pending: [],
+                    pendingBy: [],
+                    createdAt: user.createdAt,
+                };
+        });
+        res
+            .status(200)
+            .json({ message: "Users fetched successfully!", users: tempUsers });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
