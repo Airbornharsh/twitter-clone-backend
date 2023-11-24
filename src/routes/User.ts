@@ -8,19 +8,19 @@ import {
   GetUserController,
   // GetUsersController,
   UpdatePrivacyHandler,
-  // UpdateUserHandler,
+  UpdateUserHandler,
 } from "../controllers/UserController";
 
 const User = (user: Router) => {
   user.post("/", AddUserController);
   user.get("/", GetUserController);
   user.get("/other/:id", GetOtherUserController);
+  user.put("/", UpdateUserHandler);
   user.put("/privacy/", UpdatePrivacyHandler);
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);
   // user.get("/blocked/", GetBlockedUsersController);
-  // user.put("/", UpdateUserHandler);
 };
 
 export default User;

@@ -113,34 +113,34 @@ export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
   }
 };
 
-// export const UpdateUserHandler: RequestHandler = async (req, res) => {
-//   try {
-//     const email = req.get("email");
-//     const { name, age, profileImage, coverImage, bio, dob, location, website } =
-//       req.body;
+export const UpdateUserHandler: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const { name, age, profileImage, coverImage, bio, dob, location, website } =
+      req.body;
 
-//     const data = {};
+    const data = {};
 
-//     // name && (data.name = name);
-//     Object.assign(
-//       data,
-//       name && { name },
-//       age && { age },
-//       profileImage && { profileImage },
-//       coverImage && { coverImage },
-//       bio && { bio },
-//       dob && { dob },
-//       location && { location },
-//       website && { website }
-//     );
+    // name && (data.name = name);
+    Object.assign(
+      data,
+      name && { name },
+      age && { age },
+      profileImage && { profileImage },
+      coverImage && { coverImage },
+      bio && { bio },
+      dob && { dob },
+      location && { location },
+      website && { website }
+    );
 
-//     await UserModel.findOneAndUpdate({ email }, data);
+    await UserModel.findOneAndUpdate({ email }, data);
 
-//     res.status(200).json({ message: "Updated the User" });
-//   } catch (e) {
-//     ErrorResponse(res, 500, e);
-//   }
-// };
+    res.status(200).json({ message: "Updated the User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
 
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {

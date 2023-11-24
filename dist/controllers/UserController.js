@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
+exports.UpdateUserHandler = exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const AddUserController = async (req, res) => {
@@ -105,30 +105,21 @@ const UpdatePrivacyHandler = async (req, res) => {
     }
 };
 exports.UpdatePrivacyHandler = UpdatePrivacyHandler;
-// export const UpdateUserHandler: RequestHandler = async (req, res) => {
-//   try {
-//     const email = req.get("email");
-//     const { name, age, profileImage, coverImage, bio, dob, location, website } =
-//       req.body;
-//     const data = {};
-//     // name && (data.name = name);
-//     Object.assign(
-//       data,
-//       name && { name },
-//       age && { age },
-//       profileImage && { profileImage },
-//       coverImage && { coverImage },
-//       bio && { bio },
-//       dob && { dob },
-//       location && { location },
-//       website && { website }
-//     );
-//     await UserModel.findOneAndUpdate({ email }, data);
-//     res.status(200).json({ message: "Updated the User" });
-//   } catch (e) {
-//     ErrorResponse(res, 500, e);
-//   }
-// };
+const UpdateUserHandler = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const { name, age, profileImage, coverImage, bio, dob, location, website } = req.body;
+        const data = {};
+        // name && (data.name = name);
+        Object.assign(data, name && { name }, age && { age }, profileImage && { profileImage }, coverImage && { coverImage }, bio && { bio }, dob && { dob }, location && { location }, website && { website });
+        await User_1.default.findOneAndUpdate({ email }, data);
+        res.status(200).json({ message: "Updated the User" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.UpdateUserHandler = UpdateUserHandler;
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");
