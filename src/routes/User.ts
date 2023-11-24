@@ -10,6 +10,7 @@ const User = (user: Router) => {
   user.put("/privacy/allowed/:id", Controllers.UpdateAllowedUserController);
   user.put("/privacy/pending/:id", Controllers.UpdatePendingUserController);
   user.put("/privacy/blocked/:id", Controllers.UpdateBlockedUserController);
+  user.put("/privacy/unblocked/:id", Controllers.UpdateUnblockedUserController);
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);

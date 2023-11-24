@@ -13,6 +13,7 @@ const User = (user) => {
     user.put("/privacy/allowed/:id", Controllers_1.default.UpdateAllowedUserController);
     user.put("/privacy/pending/:id", Controllers_1.default.UpdatePendingUserController);
     user.put("/privacy/blocked/:id", Controllers_1.default.UpdateBlockedUserController);
+    user.put("/privacy/unblocked/:id", Controllers_1.default.UpdateUnblockedUserController);
     // user.get("/list/", GetUsersController);
     // user.get("/pending/", GetPendingUsersController);
     // user.get("/allowed/", GetAllowedUsersController);

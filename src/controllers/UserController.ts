@@ -256,6 +256,44 @@ export const UpdateBlockedUserController: RequestHandler = async (req, res) => {
   }
 };
 
+export const UpdateUnblockedUserController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findOne({ _id: otherUserId });
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await UserModel.findByIdAndUpdate(user._id, {
+      $pull: { blocked: otherUserId },
+    });
+
+    await UserModel.findByIdAndUpdate(
+      { _id: otherUserId },
+      {
+        $pull: { blockedBy: user._id },
+      }
+    );
+
+    res.status(200).json({ message: "Updated the Unblocked User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");
