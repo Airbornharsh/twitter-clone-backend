@@ -7,6 +7,7 @@ import {
   // GetPendingUsersController,
   GetUserController,
   UpdateAllowedUserController,
+  UpdatePendingUserController,
   // GetUsersController,
   UpdatePrivacyHandler,
   UpdateUserHandler,
@@ -19,6 +20,7 @@ const User = (user: Router) => {
   user.put("/", UpdateUserHandler);
   user.put("/privacy/", UpdatePrivacyHandler);
   user.put("/privacy/allowed/:id", UpdateAllowedUserController);
+  user.put("/privacy/pending/:id", UpdatePendingUserController);
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);

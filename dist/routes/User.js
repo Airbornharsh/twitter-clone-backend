@@ -8,6 +8,7 @@ const User = (user) => {
     user.put("/", UserController_1.UpdateUserHandler);
     user.put("/privacy/", UserController_1.UpdatePrivacyHandler);
     user.put("/privacy/allowed/:id", UserController_1.UpdateAllowedUserController);
+    user.put("/privacy/pending/:id", UserController_1.UpdatePendingUserController);
     // user.get("/list/", GetUsersController);
     // user.get("/pending/", GetPendingUsersController);
     // user.get("/allowed/", GetAllowedUsersController);
