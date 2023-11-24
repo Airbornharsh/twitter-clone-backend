@@ -142,7 +142,10 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const UpdateAllowingUserController: RequestHandler = async (req, res) => {
+export const UpdateAllowingUserController: RequestHandler = async (
+  req,
+  res
+) => {
   try {
     const email = req.get("email");
     const otherUserId = req.params.id;
@@ -218,7 +221,10 @@ export const UpdatePendingUserController: RequestHandler = async (req, res) => {
   }
 };
 
-export const UpdateBlockingUserController: RequestHandler = async (req, res) => {
+export const UpdateBlockingUserController: RequestHandler = async (
+  req,
+  res
+) => {
   try {
     const email = req.get("email");
     const otherUserId = req.params.id;
@@ -370,6 +376,38 @@ export const UpdateUnfollowingUserController: RequestHandler = async (
     await UserModel.findByIdAndUpdate(otherUserId, {
       $pull: { followers: user._id },
     });
+
+    res.status(200).json({ message: "Updated the Unfollowed User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const UpdateRemoveFollowerController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findById(otherUserId);
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await user.updateOne({ $pull: { followers: otherUserId } });
+
+    await otherUser.updateOne({ $pull: { following: user._id } });
 
     res.status(200).json({ message: "Updated the Unfollowed User" });
   } catch (e) {

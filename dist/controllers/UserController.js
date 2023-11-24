@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateUnfollowingUserController = exports.UpdateFollowingUserController = exports.UpdateUnblockingUserController = exports.UpdateBlockingUserController = exports.UpdatePendingUserController = exports.UpdateAllowingUserController = exports.UpdateUserHandler = exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
+exports.UpdateRemoveFollowerController = exports.UpdateUnfollowingUserController = exports.UpdateFollowingUserController = exports.UpdateUnblockingUserController = exports.UpdateBlockingUserController = exports.UpdatePendingUserController = exports.UpdateAllowingUserController = exports.UpdateUserHandler = exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const AddUserController = async (req, res) => {
@@ -298,6 +298,29 @@ const UpdateUnfollowingUserController = async (req, res) => {
     }
 };
 exports.UpdateUnfollowingUserController = UpdateUnfollowingUserController;
+const UpdateRemoveFollowerController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const otherUserId = req.params.id;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const otherUser = await User_1.default.findById(otherUserId);
+        if (!otherUser) {
+            res.status(404).json({ message: "User not found!" });
+            return;
+        }
+        await user.updateOne({ $pull: { followers: otherUserId } });
+        await otherUser.updateOne({ $pull: { following: user._id } });
+        res.status(200).json({ message: "Updated the Unfollowed User" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.UpdateRemoveFollowerController = UpdateRemoveFollowerController;
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");

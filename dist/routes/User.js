@@ -16,6 +16,7 @@ const User = (user) => {
     user.put("/privacy/unblocking/:id", Controllers_1.default.UpdateUnblockingUserController);
     user.put("/privacy/following/:id", Controllers_1.default.UpdateFollowingUserController);
     user.put("/privacy/unfollowing/:id", Controllers_1.default.UpdateUnfollowingUserController);
+    user.put("/privacy/follower/remove/:id", Controllers_1.default.UpdateRemoveFollowerController);
     // user.get("/list/", GetUsersController);
     // user.get("/pending/", GetPendingUsersController);
     // user.get("/allowed/", GetAllowedUsersController);

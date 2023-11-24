@@ -19,6 +19,10 @@ const User = (user: Router) => {
     "/privacy/unfollowing/:id",
     Controllers.UpdateUnfollowingUserController
   );
+  user.put(
+    "/privacy/follower/remove/:id",
+    Controllers.UpdateRemoveFollowerController
+  );
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);
