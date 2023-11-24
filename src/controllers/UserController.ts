@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import UserModel from "../models/User";
-import PrivacyUserModel from "../models/PrivacyUser";
 import { ErrorResponse } from "../helpers/ErrorHelper";
 
 export const AddUserController: RequestHandler = async (req, res) => {
@@ -36,7 +35,7 @@ export const GetUserController: RequestHandler = async (req, res) => {
 export const GetOtherUserController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
-    const otherEmail = req.params.otherEmail;
+    const otherEmail = req.params.id;
 
     const user = await UserModel.findOne({ email });
     const otherUser = await UserModel.findOne({ email: otherEmail });
@@ -46,357 +45,480 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
       return;
     }
 
-    const PrivacyUser = await PrivacyUserModel.findOne({
-      userId: user?._id,
-      otherUserId: otherUser?._id,
-    });
-
-    if (!PrivacyUser) {
-      const newPrivacyUser = new PrivacyUserModel({
-        userId: user?._id,
-        otherUserId: otherUser?._id,
-      });
-      await newPrivacyUser.save();
-    }
-
-    if (PrivacyUser?.allowed) {
-      res.status(200).json({ message: "User fetched successfully!", user });
-    } else {
+    if (!user) {
       res.status(401).json({ message: "User not allowed!" });
+      return;
     }
+
+    let userCheck = false;
+    const privateUser = {
+      _id: otherUser?._id,
+      name: "Private User",
+      email: "",
+      userName: "Private User",
+      profileImage: "",
+      coverImage: "",
+      bio: "",
+      dob: "",
+      location: "",
+      website: "",
+    };
+
+    user?.allowed.forEach((u: any) => {
+      if (u.toString() === otherUser?._id.toString()) {
+        userCheck = true;
+        return;
+      }
+    });
+
+    userCheck &&
+      res.status(200).json({ message: "User Found!", user: otherUser });
+
+    user?.pending.forEach((u: any) => {
+      if (u.toString() === otherUser?._id.toString()) {
+        userCheck = false;
+        res
+          .status(200)
+          .json({ message: "User not allowed!", user: privateUser });
+        return;
+      }
+    });
+
+    user?.blocked.forEach((u: any) => {
+      if (u.toString() === otherUser?._id.toString()) {
+        userCheck = false;
+        res
+          .status(200)
+          .json({ message: "User not allowed!", user: privateUser });
+        return;
+      }
+    });
+
+    if (!userCheck)
+      res.status(200).json({ message: "User not allowed!", user: privateUser });
   } catch (e: any | unknown) {
     ErrorResponse(res, 500, e);
   }
 };
 
-export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
-  try {
-    const email = req.get("email");
-    const privacy = req.body.private;
+// export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
+//     const privacy = req.body.private;
 
-    await UserModel.findOneAndUpdate({ email }, { private: privacy });
+//     await UserModel.findOneAndUpdate({ email }, { private: privacy });
 
-    res.status(200).json({ message: "Updated the Private" });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+//     res.status(200).json({ message: "Updated the Private" });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
 
-export const UpdateUserHandler: RequestHandler = async (req, res) => {
-  try {
-    const email = req.get("email");
-    const { name, age, profileImage, coverImage, bio, dob, location, website } =
-      req.body;
+// export const UpdateUserHandler: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
+//     const { name, age, profileImage, coverImage, bio, dob, location, website } =
+//       req.body;
 
-    const data = {};
+//     const data = {};
 
-    // name && (data.name = name);
-    Object.assign(
-      data,
-      name && { name },
-      age && { age },
-      profileImage && { profileImage },
-      coverImage && { coverImage },
-      bio && { bio },
-      dob && { dob },
-      location && { location },
-      website && { website }
-    );
+//     // name && (data.name = name);
+//     Object.assign(
+//       data,
+//       name && { name },
+//       age && { age },
+//       profileImage && { profileImage },
+//       coverImage && { coverImage },
+//       bio && { bio },
+//       dob && { dob },
+//       location && { location },
+//       website && { website }
+//     );
 
-    await UserModel.findOneAndUpdate({ email }, data);
+//     await UserModel.findOneAndUpdate({ email }, data);
 
-    res.status(200).json({ message: "Updated the User" });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+//     res.status(200).json({ message: "Updated the User" });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
 
-export const GetUsersController: RequestHandler = async (req, res) => {
-  try {
-    const email = req.get("email");
-    
-    const user = await UserModel.findOne({ email });
-    
-    const oldUsers = await UserModel.find({
-      email: { $ne: email },
-    }).lean();
-    
-    const userIds: string[] = [];
-    
-    oldUsers.forEach((user: { _id: any }) => {
-      userIds.push(user._id.toString());
-    });
+// export const GetUsersController: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
 
-    const users = await PrivacyUserModel.find({
-      userId: user?._id,
-    })
-      .populate("otherUserId")
-      .lean();
+//     const user = await UserModel.findOne({ email });
 
-    const addedUsers: string[] = [];
+//     const oldUsers = await UserModel.find({
+//       email: { $ne: email },
+//     }).lean();
 
-    const tempUsers = users.map((user: { allowed: any; otherUserId: any }) => {
-      addedUsers.push(user.otherUserId._id.toString());
-      if (!user.allowed) {
-        return {
-          _id: user.otherUserId._id,
-          allowed: user.allowed,
-          private: user.otherUserId.private,
-          name: "Private User",
-          email: "",
-          userName: "Private User",
-          profileImage: "",
-          coverImage: "",
-          bio: "",
-          dob: "",
-          location: "",
-          website: "",
-        };
-      } else {
-        return {
-          _id: user.otherUserId._id,
-          allowed: user.allowed,
-          private: user.otherUserId.private,
-          name: user.otherUserId.name,
-          email: user.otherUserId.email,
-          userName: user.otherUserId.userName,
-          profileImage: user.otherUserId.profileImage,
-          coverImage: user.otherUserId.coverImage,
-          bio: user.otherUserId.bio,
-          dob: user.otherUserId.dob,
-          location: user.otherUserId.location,
-          website: user.otherUserId.website,
-        };
-      }
-    });
+//     const userIds: string[] = [];
 
-    const filteredUsers = userIds.filter((u: string) => {
-      return !addedUsers.includes(u);
-    });
+//     oldUsers.forEach((user: { _id: any }) => {
+//       userIds.push(user._id.toString());
+//     });
 
-    const newUsers = await UserModel.find({
-      _id: { $in: filteredUsers },
-    }).lean();
+//     const users = await PrivacyUserModel.find({
+//       userId: user?._id,
+//     })
+//       .populate("otherUserId")
+//       .lean();
 
-    const tempNewUsers = newUsers.map((user: any) => {
-      if (user.private)
-        return {
-          _id: user._id,
-          allowed: false,
-          private: user.private,
-          name: "Private User",
-          email: "",
-          userName: "Private User",
-          profileImage: "",
-          coverImage: "",
-          bio: "",
-          dob: "",
-          location: "",
-          website: "",
-        };
-      else
-        return {
-          _id: user._id,
-          allowed: false,
-          private: user.private,
-          name: user.name,
-          email: user.email,
-          userName: user.userName,
-          profileImage: user.profileImage,
-          coverImage: user.coverImage,
-          bio: user.bio,
-          dob: user.dob,
-          location: user.location,
-          website: user.website,
-        };
-    });
+//     const addedUsers: string[] = [];
 
-    const allUsers = [...tempUsers, ...tempNewUsers];
+//     const tempUsers = users.map((user: { allowed: any; otherUserId: any }) => {
+//       addedUsers.push(user.otherUserId._id.toString());
+//       if (!user.allowed) {
+//         return {
+//           _id: user.otherUserId._id,
+//           allowed: user.allowed,
+//           private: user.otherUserId.private,
+//           name: "Private User",
+//           email: "",
+//           userName: "Private User",
+//           profileImage: "",
+//           coverImage: "",
+//           bio: "",
+//           dob: "",
+//           location: "",
+//           website: "",
+//         };
+//       } else {
+//         return {
+//           _id: user.otherUserId._id,
+//           allowed: user.allowed,
+//           private: user.otherUserId.private,
+//           name: user.otherUserId.name,
+//           email: user.otherUserId.email,
+//           userName: user.otherUserId.userName,
+//           profileImage: user.otherUserId.profileImage,
+//           coverImage: user.otherUserId.coverImage,
+//           bio: user.otherUserId.bio,
+//           dob: user.otherUserId.dob,
+//           location: user.otherUserId.location,
+//           website: user.otherUserId.website,
+//         };
+//       }
+//     });
 
-    res
-      .status(200)
-      .json({ message: "Users fetched successfully!", users: allUsers });
-  } catch (e: any | unknown) {
-    ErrorResponse(res, 500, e);
-  }
-};
+//     const filteredUsers = userIds.filter((u: string) => {
+//       return !addedUsers.includes(u);
+//     });
 
-export const GetAllowedUsersController: RequestHandler = async (req, res) => {
-  try {
-    const email = req.get("email");
+//     const newUsers = await UserModel.find({
+//       _id: { $in: filteredUsers },
+//     }).lean();
 
-    const user = await UserModel.findOne({ email });
+//     const tempNewUsers = newUsers.map((user: any) => {
+//       if (user.private)
+//         return {
+//           _id: user._id,
+//           allowed: false,
+//           private: user.private,
+//           name: "Private User",
+//           email: "",
+//           userName: "Private User",
+//           profileImage: "",
+//           coverImage: "",
+//           bio: "",
+//           dob: "",
+//           location: "",
+//           website: "",
+//         };
+//       else
+//         return {
+//           _id: user._id,
+//           allowed: false,
+//           private: user.private,
+//           name: user.name,
+//           email: user.email,
+//           userName: user.userName,
+//           profileImage: user.profileImage,
+//           coverImage: user.coverImage,
+//           bio: user.bio,
+//           dob: user.dob,
+//           location: user.location,
+//           website: user.website,
+//         };
+//     });
 
-    const users = await PrivacyUserModel.find({
-      userId: user?._id,
-      allowed: true,
-    })
-      .populate("otherUserId")
-      .lean();
+//     const allUsers = [...tempUsers, ...tempNewUsers];
 
-    const privateIds: string[] = [];
+//     res
+//       .status(200)
+//       .json({ message: "Users fetched successfully!", users: allUsers });
+//   } catch (e: any | unknown) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
 
-    // const tempUsers = [];
-    let allowedUsers: any[] = [];
+// export const GetPendingUsersController: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
 
-    users.forEach((user: { otherUserId: any }) => {
-      if (!user.otherUserId.private) {
-        allowedUsers.push({
-          _id: user.otherUserId._id,
-          name: user.otherUserId.name,
-          email: user.otherUserId.email,
-          private: user.otherUserId.private,
-          userName: user.otherUserId.userName,
-          profileImage: user.otherUserId.profileImage,
-          coverImage: user.otherUserId.coverImage,
-          bio: user.otherUserId.bio,
-          dob: user.otherUserId.dob,
-          location: user.otherUserId.location,
-          website: user.otherUserId.website,
-        });
-      } else {
-        privateIds.push(user.otherUserId._id.toString());
-      }
-    });
+//     const user = await UserModel.findOne({ email });
 
-    const tempPrivacyUsers = await PrivacyUserModel.find({
-      otherUserId: { $in: privateIds },
-    })
-      .populate("otherUserId")
-      .lean();
+//     const users = await PrivacyUserModel.find({
+//       userId: user?._id,
+//       allowed: null,
+//     })
+//       .populate("otherUserId")
+//       .lean();
 
-    const tempUsers = tempPrivacyUsers.map(
-      (user: { allowed: any; otherUserId: any }) => {
-        if (!user.allowed) {
-          return {
-            _id: user.otherUserId._id,
-            allowed: user.allowed,
-            private: user.otherUserId.private,
-            name: "Private User",
-            email: "",
-            userName: "Private User",
-            profileImage: "",
-            coverImage: "",
-            bio: "",
-            dob: "",
-            location: "",
-            website: "",
-          };
-        } else {
-          return {
-            _id: user.otherUserId._id,
-            allowed: user.allowed,
-            private: user.otherUserId.private,
-            name: user.otherUserId.name,
-            email: user.otherUserId.email,
-            userName: user.otherUserId.userName,
-            profileImage: user.otherUserId.profileImage,
-            coverImage: user.otherUserId.coverImage,
-            bio: user.otherUserId.bio,
-            dob: user.otherUserId.dob,
-            location: user.otherUserId.location,
-            website: user.otherUserId.website,
-          };
-        }
-      }
-    );
+//     const privateIds: string[] = [];
 
-    allowedUsers = [...allowedUsers, ...tempUsers];
+//     // const tempUsers = [];
+//     let pendingUsers: any[] = [];
 
-    res
-      .status(200)
-      .json({ message: "Users fetched successfully!", users: allowedUsers });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+//     users.forEach((user: { otherUserId: any }) => {
+//       if (!user.otherUserId.private) {
+//         pendingUsers.push({
+//           _id: user.otherUserId._id,
+//           name: user.otherUserId.name,
+//           email: user.otherUserId.email,
+//           private: user.otherUserId.private,
+//           userName: user.otherUserId.userName,
+//           profileImage: user.otherUserId.profileImage,
+//           coverImage: user.otherUserId.coverImage,
+//           bio: user.otherUserId.bio,
+//           dob: user.otherUserId.dob,
+//           location: user.otherUserId.location,
+//           website: user.otherUserId.website,
+//         });
+//       } else {
+//         privateIds.push(user.otherUserId._id.toString());
+//       }
+//     });
 
-export const GetBlockedUsersController: RequestHandler = async (req, res) => {
-  try {
-    const email = req.get("email");
+//     const tempPrivacyUsers = await PrivacyUserModel.find({
+//       otherUserId: { $in: privateIds },
+//     })
+//       .populate("otherUserId")
+//       .lean();
 
-    const user = await UserModel.findOne({ email });
+//     const tempUsers = tempPrivacyUsers.map(
+//       (user: { allowed: any; otherUserId: any }) => {
+//         if (!user.allowed) {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: "Private User",
+//             email: "",
+//             userName: "Private User",
+//             profileImage: "",
+//             coverImage: "",
+//             bio: "",
+//             dob: "",
+//             location: "",
+//             website: "",
+//           };
+//         } else {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: user.otherUserId.name,
+//             email: user.otherUserId.email,
+//             userName: user.otherUserId.userName,
+//             profileImage: user.otherUserId.profileImage,
+//             coverImage: user.otherUserId.coverImage,
+//             bio: user.otherUserId.bio,
+//             dob: user.otherUserId.dob,
+//             location: user.otherUserId.location,
+//             website: user.otherUserId.website,
+//           };
+//         }
+//       }
+//     );
 
-    const users = await PrivacyUserModel.find({
-      userId: user?._id,
-      allowed: false,
-    })
-      .populate("otherUserId")
-      .lean();
+//     pendingUsers = [...pendingUsers, ...tempUsers];
 
-    const privateIds: string[] = [];
+//     res
+//       .status(200)
+//       .json({ message: "Users fetched successfully!", users: pendingUsers });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
 
-    // const tempUsers = [];
-    let blockedUsers: any[] = [];
+// export const GetAllowedUsersController: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
 
-    users.forEach((user: { otherUserId: any }) => {
-      if (!user.otherUserId.private) {
-        blockedUsers.push({
-          _id: user.otherUserId._id,
-          name: user.otherUserId.name,
-          email: user.otherUserId.email,
-          private: user.otherUserId.private,
-          userName: user.otherUserId.userName,
-          profileImage: user.otherUserId.profileImage,
-          coverImage: user.otherUserId.coverImage,
-          bio: user.otherUserId.bio,
-          dob: user.otherUserId.dob,
-          location: user.otherUserId.location,
-          website: user.otherUserId.website,
-        });
-      } else {
-        privateIds.push(user.otherUserId._id.toString());
-      }
-    });
+//     const user = await UserModel.findOne({ email });
 
-    const tempPrivacyUsers = await PrivacyUserModel.find({
-      otherUserId: { $in: privateIds },
-    })
-      .populate("otherUserId")
-      .lean();
+//     const users = await PrivacyUserModel.find({
+//       userId: user?._id,
+//       allowed: true,
+//     })
+//       .populate("otherUserId")
+//       .lean();
 
-    const tempUsers = tempPrivacyUsers.map(
-      (user: { allowed: any; otherUserId: any }) => {
-        if (!user.allowed) {
-          return {
-            _id: user.otherUserId._id,
-            allowed: user.allowed,
-            private: user.otherUserId.private,
-            name: "Private User",
-            email: "",
-            userName: "Private User",
-            profileImage: "",
-            coverImage: "",
-            bio: "",
-            dob: "",
-            location: "",
-            website: "",
-          };
-        } else {
-          return {
-            _id: user.otherUserId._id,
-            allowed: user.allowed,
-            private: user.otherUserId.private,
-            name: user.otherUserId.name,
-            email: user.otherUserId.email,
-            userName: user.otherUserId.userName,
-            profileImage: user.otherUserId.profileImage,
-            coverImage: user.otherUserId.coverImage,
-            bio: user.otherUserId.bio,
-            dob: user.otherUserId.dob,
-            location: user.otherUserId.location,
-            website: user.otherUserId.website,
-          };
-        }
-      }
-    );
+//     const privateIds: string[] = [];
 
-    blockedUsers = [...blockedUsers, ...tempUsers];
+//     // const tempUsers = [];
+//     let allowedUsers: any[] = [];
 
-    res
-      .status(200)
-      .json({ message: "Users fetched successfully!", users: blockedUsers });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+//     users.forEach((user: { otherUserId: any }) => {
+//       if (!user.otherUserId.private) {
+//         allowedUsers.push({
+//           _id: user.otherUserId._id,
+//           name: user.otherUserId.name,
+//           email: user.otherUserId.email,
+//           private: user.otherUserId.private,
+//           userName: user.otherUserId.userName,
+//           profileImage: user.otherUserId.profileImage,
+//           coverImage: user.otherUserId.coverImage,
+//           bio: user.otherUserId.bio,
+//           dob: user.otherUserId.dob,
+//           location: user.otherUserId.location,
+//           website: user.otherUserId.website,
+//         });
+//       } else {
+//         privateIds.push(user.otherUserId._id.toString());
+//       }
+//     });
+
+//     const tempPrivacyUsers = await PrivacyUserModel.find({
+//       otherUserId: { $in: privateIds },
+//     })
+//       .populate("otherUserId")
+//       .lean();
+
+//     const tempUsers = tempPrivacyUsers.map(
+//       (user: { allowed: any; otherUserId: any }) => {
+//         if (!user.allowed) {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: "Private User",
+//             email: "",
+//             userName: "Private User",
+//             profileImage: "",
+//             coverImage: "",
+//             bio: "",
+//             dob: "",
+//             location: "",
+//             website: "",
+//           };
+//         } else {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: user.otherUserId.name,
+//             email: user.otherUserId.email,
+//             userName: user.otherUserId.userName,
+//             profileImage: user.otherUserId.profileImage,
+//             coverImage: user.otherUserId.coverImage,
+//             bio: user.otherUserId.bio,
+//             dob: user.otherUserId.dob,
+//             location: user.otherUserId.location,
+//             website: user.otherUserId.website,
+//           };
+//         }
+//       }
+//     );
+
+//     allowedUsers = [...allowedUsers, ...tempUsers];
+
+//     res
+//       .status(200)
+//       .json({ message: "Users fetched successfully!", users: allowedUsers });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
+
+// export const GetBlockedUsersController: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
+
+//     const user = await UserModel.findOne({ email });
+
+//     const users = await PrivacyUserModel.find({
+//       userId: user?._id,
+//       allowed: false,
+//     })
+//       .populate("otherUserId")
+//       .lean();
+
+//     const privateIds: string[] = [];
+
+//     // const tempUsers = [];
+//     let blockedUsers: any[] = [];
+
+//     users.forEach((user: { otherUserId: any }) => {
+//       if (!user.otherUserId.private) {
+//         blockedUsers.push({
+//           _id: user.otherUserId._id,
+//           name: user.otherUserId.name,
+//           email: user.otherUserId.email,
+//           private: user.otherUserId.private,
+//           userName: user.otherUserId.userName,
+//           profileImage: user.otherUserId.profileImage,
+//           coverImage: user.otherUserId.coverImage,
+//           bio: user.otherUserId.bio,
+//           dob: user.otherUserId.dob,
+//           location: user.otherUserId.location,
+//           website: user.otherUserId.website,
+//         });
+//       } else {
+//         privateIds.push(user.otherUserId._id.toString());
+//       }
+//     });
+
+//     const tempPrivacyUsers = await PrivacyUserModel.find({
+//       otherUserId: { $in: privateIds },
+//     })
+//       .populate("otherUserId")
+//       .lean();
+
+//     const tempUsers = tempPrivacyUsers.map(
+//       (user: { allowed: any; otherUserId: any }) => {
+//         if (!user.allowed) {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: "Private User",
+//             email: "",
+//             userName: "Private User",
+//             profileImage: "",
+//             coverImage: "",
+//             bio: "",
+//             dob: "",
+//             location: "",
+//             website: "",
+//           };
+//         } else {
+//           return {
+//             _id: user.otherUserId._id,
+//             allowed: user.allowed,
+//             private: user.otherUserId.private,
+//             name: user.otherUserId.name,
+//             email: user.otherUserId.email,
+//             userName: user.otherUserId.userName,
+//             profileImage: user.otherUserId.profileImage,
+//             coverImage: user.otherUserId.coverImage,
+//             bio: user.otherUserId.bio,
+//             dob: user.otherUserId.dob,
+//             location: user.otherUserId.location,
+//             website: user.otherUserId.website,
+//           };
+//         }
+//       }
+//     );
+
+//     blockedUsers = [...blockedUsers, ...tempUsers];
+
+//     res
+//       .status(200)
+//       .json({ message: "Users fetched successfully!", users: blockedUsers });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };

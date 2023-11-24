@@ -50,6 +50,67 @@ const Users = new mongoose_1.Schema({
         type: String,
         required: false,
     },
+    followers: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    following: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    blocked: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    allowed: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    pending: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    blockedBy: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    allowedBy: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    pendingBy: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Users",
+            default: [],
+        },
+    ],
+    createdAt: {
+        type: Date,
+        required: false,
+        default: Date.now(),
+    },
 });
 const UserModel = (0, mongoose_1.model)("Users", Users);
 exports.default = UserModel;

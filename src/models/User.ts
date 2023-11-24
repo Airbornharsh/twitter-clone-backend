@@ -49,6 +49,67 @@ const Users = new Schema({
     type: String,
     required: false,
   },
+  followers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  following: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  blocked: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  allowed: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  pending: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  blockedBy: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  allowedBy: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  pendingBy: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      default: [],
+    },
+  ],
+  createdAt: {
+    type: Date,
+    required: false,
+    default: Date.now(),
+  },
 });
 
 const UserModel = model("Users", Users);
