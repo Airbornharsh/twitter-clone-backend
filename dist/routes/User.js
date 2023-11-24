@@ -10,11 +10,12 @@ const User = (user) => {
     user.get("/other/:id", Controllers_1.default.GetOtherUserController);
     user.put("/", Controllers_1.default.UpdateUserHandler);
     user.put("/privacy/", Controllers_1.default.UpdatePrivacyHandler);
-    user.put("/privacy/allowed/:id", Controllers_1.default.UpdateAllowedUserController);
     user.put("/privacy/pending/:id", Controllers_1.default.UpdatePendingUserController);
-    user.put("/privacy/blocked/:id", Controllers_1.default.UpdateBlockedUserController);
-    user.put("/privacy/unblocked/:id", Controllers_1.default.UpdateUnblockedUserController);
-    user.put("/privacy/unallowed/:id", Controllers_1.default.UpdateFollowedUserController);
+    user.put("/privacy/allowing/:id", Controllers_1.default.UpdateAllowingUserController);
+    user.put("/privacy/blocking/:id", Controllers_1.default.UpdateBlockingUserController);
+    user.put("/privacy/unblocking/:id", Controllers_1.default.UpdateUnblockingUserController);
+    user.put("/privacy/following/:id", Controllers_1.default.UpdateFollowingUserController);
+    user.put("/privacy/unfollowing/:id", Controllers_1.default.UpdateUnfollowingUserController);
     // user.get("/list/", GetUsersController);
     // user.get("/pending/", GetPendingUsersController);
     // user.get("/allowed/", GetAllowedUsersController);

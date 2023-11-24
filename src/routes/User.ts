@@ -7,11 +7,18 @@ const User = (user: Router) => {
   user.get("/other/:id", Controllers.GetOtherUserController);
   user.put("/", Controllers.UpdateUserHandler);
   user.put("/privacy/", Controllers.UpdatePrivacyHandler);
-  user.put("/privacy/allowed/:id", Controllers.UpdateAllowedUserController);
   user.put("/privacy/pending/:id", Controllers.UpdatePendingUserController);
-  user.put("/privacy/blocked/:id", Controllers.UpdateBlockedUserController);
-  user.put("/privacy/unblocked/:id", Controllers.UpdateUnblockedUserController);
-  user.put("/privacy/unallowed/:id", Controllers.UpdateFollowedUserController);
+  user.put("/privacy/allowing/:id", Controllers.UpdateAllowingUserController);
+  user.put("/privacy/blocking/:id", Controllers.UpdateBlockingUserController);
+  user.put(
+    "/privacy/unblocking/:id",
+    Controllers.UpdateUnblockingUserController
+  );
+  user.put("/privacy/following/:id", Controllers.UpdateFollowingUserController);
+  user.put(
+    "/privacy/unfollowing/:id",
+    Controllers.UpdateUnfollowingUserController
+  );
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);

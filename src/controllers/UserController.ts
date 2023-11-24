@@ -142,7 +142,7 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const UpdateAllowedUserController: RequestHandler = async (req, res) => {
+export const UpdateAllowingUserController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
     const otherUserId = req.params.id;
@@ -218,7 +218,7 @@ export const UpdatePendingUserController: RequestHandler = async (req, res) => {
   }
 };
 
-export const UpdateBlockedUserController: RequestHandler = async (req, res) => {
+export const UpdateBlockingUserController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
     const otherUserId = req.params.id;
@@ -256,7 +256,7 @@ export const UpdateBlockedUserController: RequestHandler = async (req, res) => {
   }
 };
 
-export const UpdateUnblockedUserController: RequestHandler = async (
+export const UpdateUnblockingUserController: RequestHandler = async (
   req,
   res
 ) => {
@@ -295,7 +295,7 @@ export const UpdateUnblockedUserController: RequestHandler = async (
   }
 };
 
-export const UpdateFollowedUserController: RequestHandler = async (
+export const UpdateFollowingUserController: RequestHandler = async (
   req,
   res
 ) => {
@@ -336,6 +336,42 @@ export const UpdateFollowedUserController: RequestHandler = async (
     });
 
     res.status(200).json({ message: "Updated the Followed User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const UpdateUnfollowingUserController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findById(otherUserId);
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await UserModel.findByIdAndUpdate(user._id, {
+      $pull: { following: otherUserId },
+    });
+
+    await UserModel.findByIdAndUpdate(otherUserId, {
+      $pull: { followers: user._id },
+    });
+
+    res.status(200).json({ message: "Updated the Unfollowed User" });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
