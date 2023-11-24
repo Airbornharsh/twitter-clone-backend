@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Controllers from "../controllers/Controllers";
-import Privacy from "./Privacy";
+import Privacy from "./UserPrivacy";
 import UserList from "./UserList";
 
 const User = (router: Router) => {
