@@ -24,4 +24,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userController = __importStar(require("./UserController"));
-exports.default = { ...userController };
+const userPrivacyController = __importStar(require("./UserPrivacyController"));
+const userListController = __importStar(require("./UserListController"));
+exports.default = {
+    ...userController,
+    ...userPrivacyController,
+    ...userListController,
+};

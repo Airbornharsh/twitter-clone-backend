@@ -1,5 +1,5 @@
 import { Router } from "express";
 
-const Post = (post: Router) => {};
+const Post = (router: Router) => {};
 
 export default Post;

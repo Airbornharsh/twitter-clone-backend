@@ -1,4 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Post = (post) => { };
+const Post = (router) => { };
 exports.default = Post;

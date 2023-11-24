@@ -7,14 +7,8 @@ const Route = (router: Router) => {
     res.send("Hello World!");
   });
 
-  const user = Router();
-  const post = Router();
-
-  router.use("/user", user);
-  router.use("/post", post);
-
-  User(user);
-  Post(post);
+  User(router);
+  // Post(post);
 };
 
 export default Route;
