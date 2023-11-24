@@ -294,6 +294,53 @@ export const UpdateUnblockedUserController: RequestHandler = async (
     ErrorResponse(res, 500, e);
   }
 };
+
+export const UpdateFollowedUserController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findById(otherUserId);
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await UserModel.findByIdAndUpdate(user._id, {
+      $addToSet: { following: otherUserId },
+      $pull: {
+        blocked: otherUserId,
+        allowed: otherUserId,
+        pending: otherUserId,
+      },
+    });
+
+    await UserModel.findByIdAndUpdate(otherUserId, {
+      $addToSet: { followers: user._id },
+      $pull: {
+        blockedBy: user._id,
+        allowedBy: user._id,
+        pendingBy: user._id,
+      },
+    });
+
+    res.status(200).json({ message: "Updated the Followed User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");

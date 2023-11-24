@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateUnblockedUserController = exports.UpdateBlockedUserController = exports.UpdatePendingUserController = exports.UpdateAllowedUserController = exports.UpdateUserHandler = exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
+exports.UpdateFollowedUserController = exports.UpdateUnblockedUserController = exports.UpdateBlockedUserController = exports.UpdatePendingUserController = exports.UpdateAllowedUserController = exports.UpdateUserHandler = exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const AddUserController = async (req, res) => {
@@ -234,6 +234,43 @@ const UpdateUnblockedUserController = async (req, res) => {
     }
 };
 exports.UpdateUnblockedUserController = UpdateUnblockedUserController;
+const UpdateFollowedUserController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const otherUserId = req.params.id;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const otherUser = await User_1.default.findById(otherUserId);
+        if (!otherUser) {
+            res.status(404).json({ message: "User not found!" });
+            return;
+        }
+        await User_1.default.findByIdAndUpdate(user._id, {
+            $addToSet: { following: otherUserId },
+            $pull: {
+                blocked: otherUserId,
+                allowed: otherUserId,
+                pending: otherUserId,
+            },
+        });
+        await User_1.default.findByIdAndUpdate(otherUserId, {
+            $addToSet: { followers: user._id },
+            $pull: {
+                blockedBy: user._id,
+                allowedBy: user._id,
+                pendingBy: user._id,
+            },
+        });
+        res.status(200).json({ message: "Updated the Followed User" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.UpdateFollowedUserController = UpdateFollowedUserController;
 // export const GetUsersController: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");
