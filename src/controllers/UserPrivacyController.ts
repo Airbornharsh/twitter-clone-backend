@@ -38,12 +38,12 @@ export const UpdateAllowingUserController: RequestHandler = async (
     }
 
     await user.updateOne({
-      $addToSet: { allowed: otherUserId, following: otherUserId },
+      $addToSet: { allowed: otherUserId, followers: otherUserId },
       $pull: { pending: otherUserId, blocked: otherUserId },
     });
 
     await otherUser.updateOne({
-      $addToSet: { allowedBy: user._id, followers: user._id },
+      $addToSet: { allowedBy: user._id, following: user._id },
       $pull: { pendingBy: user._id, blockedBy: user._id },
     });
 
@@ -205,12 +205,12 @@ export const UpdateFollowingUserController: RequestHandler = async (
       });
 
       if (!userCheck) {
-        await user.updateOne({
-          $addToSet: { pending: otherUserId },
+        await otherUser.updateOne({
+          $addToSet: { pending: user._id },
         });
 
-        await otherUser.updateOne({
-          $addToSet: { pendingBy: user._id },
+        await user.updateOne({
+          $addToSet: { pendingBy: otherUser._id },
         });
 
         res

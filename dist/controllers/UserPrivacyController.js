@@ -33,11 +33,11 @@ const UpdateAllowingUserController = async (req, res) => {
             return;
         }
         await user.updateOne({
-            $addToSet: { allowed: otherUserId, following: otherUserId },
+            $addToSet: { allowed: otherUserId, followers: otherUserId },
             $pull: { pending: otherUserId, blocked: otherUserId },
         });
         await otherUser.updateOne({
-            $addToSet: { allowedBy: user._id, followers: user._id },
+            $addToSet: { allowedBy: user._id, following: user._id },
             $pull: { pendingBy: user._id, blockedBy: user._id },
         });
         res.status(200).json({ message: "Updated the Allowed User" });
@@ -165,11 +165,11 @@ const UpdateFollowingUserController = async (req, res) => {
                 }
             });
             if (!userCheck) {
-                await user.updateOne({
-                    $addToSet: { pending: otherUserId },
-                });
                 await otherUser.updateOne({
-                    $addToSet: { pendingBy: user._id },
+                    $addToSet: { pending: user._id },
+                });
+                await user.updateOne({
+                    $addToSet: { pendingBy: otherUser._id },
                 });
                 res
                     .status(200)
