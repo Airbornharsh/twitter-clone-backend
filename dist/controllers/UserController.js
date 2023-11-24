@@ -175,7 +175,7 @@ const GetUsersController = async (req, res) => {
                     allowed: false,
                     private: user.private,
                     name: user.name,
-                    email: user.otherUserId.email,
+                    email: user.email,
                     userName: user.userName,
                     profileImage: user.profileImage,
                     coverImage: user.coverImage,

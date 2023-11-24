@@ -114,15 +114,15 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
 export const GetUsersController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
-
+    
     const user = await UserModel.findOne({ email });
-
+    
     const oldUsers = await UserModel.find({
       email: { $ne: email },
     }).lean();
-
+    
     const userIds: string[] = [];
-
+    
     oldUsers.forEach((user: { _id: any }) => {
       userIds.push(user._id.toString());
     });
@@ -200,7 +200,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
           allowed: false,
           private: user.private,
           name: user.name,
-          email: user.otherUserId.email,
+          email: user.email,
           userName: user.userName,
           profileImage: user.profileImage,
           coverImage: user.coverImage,
