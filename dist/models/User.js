@@ -10,6 +10,7 @@ const Users = new mongoose_1.Schema({
     userName: {
         type: String,
         trim: true,
+        default: "",
     },
     age: {
         type: Number,
@@ -29,14 +30,17 @@ const Users = new mongoose_1.Schema({
     profileImage: {
         type: String,
         required: false,
+        default: "",
     },
     coverImage: {
         type: String,
         required: false,
+        default: "",
     },
     bio: {
         type: String,
         required: false,
+        default: "",
     },
     dob: {
         type: String,
@@ -45,10 +49,12 @@ const Users = new mongoose_1.Schema({
     location: {
         type: String,
         required: false,
+        default: "",
     },
     website: {
         type: String,
         required: false,
+        default: "",
     },
     followers: [
         {

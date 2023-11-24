@@ -40,13 +40,18 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
     const user = await UserModel.findOne({ email });
     const otherUser = await UserModel.findOne({ email: otherEmail });
 
-    if (!otherUser?.private) {
-      res.status(200).json({ message: "User Found!", user: otherUser });
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
       return;
     }
 
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    if (!otherUser?.private) {
+      res.status(200).json({ message: "User Found!", user: otherUser });
       return;
     }
 
@@ -77,9 +82,6 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
     user?.pending.forEach((u: any) => {
       if (u.toString() === otherUser?._id.toString()) {
         userCheck = false;
-        res
-          .status(200)
-          .json({ message: "User not allowed!", user: privateUser });
         return;
       }
     });
@@ -87,9 +89,6 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
     user?.blocked.forEach((u: any) => {
       if (u.toString() === otherUser?._id.toString()) {
         userCheck = false;
-        res
-          .status(200)
-          .json({ message: "User not allowed!", user: privateUser });
         return;
       }
     });
@@ -101,18 +100,18 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
   }
 };
 
-// export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
-//   try {
-//     const email = req.get("email");
-//     const privacy = req.body.private;
+export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const privacy = req.body.private;
 
-//     await UserModel.findOneAndUpdate({ email }, { private: privacy });
+    await UserModel.findOneAndUpdate({ email }, { private: privacy });
 
-//     res.status(200).json({ message: "Updated the Private" });
-//   } catch (e) {
-//     ErrorResponse(res, 500, e);
-//   }
-// };
+    res.status(200).json({ message: "Updated the Private" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
 
 // export const UpdateUserHandler: RequestHandler = async (req, res) => {
 //   try {

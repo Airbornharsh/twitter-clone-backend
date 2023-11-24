@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
+exports.UpdatePrivacyHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const AddUserController = async (req, res) => {
@@ -40,12 +40,16 @@ const GetOtherUserController = async (req, res) => {
         const otherEmail = req.params.id;
         const user = await User_1.default.findOne({ email });
         const otherUser = await User_1.default.findOne({ email: otherEmail });
-        if (!otherUser?.private) {
-            res.status(200).json({ message: "User Found!", user: otherUser });
-            return;
-        }
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        if (!otherUser) {
+            res.status(404).json({ message: "User not found!" });
+            return;
+        }
+        if (!otherUser?.private) {
+            res.status(200).json({ message: "User Found!", user: otherUser });
             return;
         }
         let userCheck = false;
@@ -72,18 +76,12 @@ const GetOtherUserController = async (req, res) => {
         user?.pending.forEach((u) => {
             if (u.toString() === otherUser?._id.toString()) {
                 userCheck = false;
-                res
-                    .status(200)
-                    .json({ message: "User not allowed!", user: privateUser });
                 return;
             }
         });
         user?.blocked.forEach((u) => {
             if (u.toString() === otherUser?._id.toString()) {
                 userCheck = false;
-                res
-                    .status(200)
-                    .json({ message: "User not allowed!", user: privateUser });
                 return;
             }
         });
@@ -95,16 +93,18 @@ const GetOtherUserController = async (req, res) => {
     }
 };
 exports.GetOtherUserController = GetOtherUserController;
-// export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
-//   try {
-//     const email = req.get("email");
-//     const privacy = req.body.private;
-//     await UserModel.findOneAndUpdate({ email }, { private: privacy });
-//     res.status(200).json({ message: "Updated the Private" });
-//   } catch (e) {
-//     ErrorResponse(res, 500, e);
-//   }
-// };
+const UpdatePrivacyHandler = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const privacy = req.body.private;
+        await User_1.default.findOneAndUpdate({ email }, { private: privacy });
+        res.status(200).json({ message: "Updated the Private" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.UpdatePrivacyHandler = UpdatePrivacyHandler;
 // export const UpdateUserHandler: RequestHandler = async (req, res) => {
 //   try {
 //     const email = req.get("email");
