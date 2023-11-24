@@ -7,7 +7,7 @@ const UserList = (user: Router) => {
   user.use("/list", list);
 
   list.get("/", Controllers.GetUsersController);
-  // list.get("/pending/", GetPendingUsersController);
+  list.get("/pending/", Controllers.GetPendingUsersController);
   list.get("/allowed/", Controllers.GetAllowedUsersController);
   list.get("/blocked/", Controllers.GetBlockedUsersController);
 };

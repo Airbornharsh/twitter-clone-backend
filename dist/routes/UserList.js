@@ -9,7 +9,7 @@ const UserList = (user) => {
     const list = (0, express_1.Router)();
     user.use("/list", list);
     list.get("/", Controllers_1.default.GetUsersController);
-    // list.get("/pending/", GetPendingUsersController);
+    list.get("/pending/", Controllers_1.default.GetPendingUsersController);
     list.get("/allowed/", Controllers_1.default.GetAllowedUsersController);
     list.get("/blocked/", Controllers_1.default.GetBlockedUsersController);
 };
