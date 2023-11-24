@@ -7,7 +7,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
     const email = req.get("email");
     const search = (req.query.search as string).trim();
 
-    const user = req.get("email");
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       res.status(401).json({ message: "User not allowed!" });
@@ -19,38 +19,38 @@ export const GetUsersController: RequestHandler = async (req, res) => {
       name: { $regex: search as string, $options: "i" },
     });
 
-    const tempUsers = users.map((user) => {
-      if (!user.private)
+    const tempUsers = users.map((u) => {
+      if (!u.private || u.allowed.some((a) => a.equals(user._id))) {
         return {
-          _id: user._id,
-          name: user.name,
-          userName: user.userName,
-          email: user.email,
-          bio: user.bio,
-          profieImage: user.profileImage,
-          coverImage: user.coverImage,
-          dob: user.dob,
-          location: user.location,
-          website: user.website,
-          private: user.private,
-          followers: user.followers,
-          following: user.following,
-          allowed: user.allowed,
-          allowedBy: user.allowedBy,
-          blocked: user.blocked,
-          blockedBy: user.blockedBy,
-          pending: user.pending,
-          pendingBy: user.pendingBy,
-          createdAt: user.createdAt,
+          _id: u._id,
+          name: u.name,
+          userName: u.userName,
+          email: u.email,
+          bio: u.bio,
+          profileImage: u.profileImage,
+          coverImage: u.coverImage,
+          dob: u.dob,
+          location: u.location,
+          website: u.website,
+          private: u.private,
+          followers: u.followers,
+          following: u.following,
+          allowed: u.allowed,
+          allowedBy: u.allowedBy,
+          blocked: u.blocked,
+          blockedBy: u.blockedBy,
+          pending: u.pending,
+          pendingBy: u.pendingBy,
+          createdAt: u.createdAt,
         };
-      else
+      } else
         return {
-          _id: user._id,
-          name: user.name,
-          userName: user.userName,
+          _id: u._id,
+          name: u.name,
+          userName: u.userName,
           email: "",
           bio: "",
-          profieImage: "",
+          profileImage: "",
           coverImage: "",
           dob: "",
           location: "",
@@ -58,13 +58,13 @@ export const GetUsersController: RequestHandler = async (req, res) => {
           private: true,
           followers: [],
           following: [],
-          allowed: user.allowed,
+          allowed: u.allowed,
           allowedBy: [],
-          blocked: user.blocked,
+          blocked: u.blocked,
           blockedBy: [],
           pending: [],
           pendingBy: [],
-          createdAt: user.createdAt,
+          createdAt: u.createdAt,
         };
     });
 
