@@ -1,26 +1,15 @@
 import { Router } from "express";
-import {
-  AddUserController,
-  // GetAllowedUsersController,
-  // GetBlockedUsersController,
-  GetOtherUserController,
-  // GetPendingUsersController,
-  GetUserController,
-  UpdateAllowedUserController,
-  UpdatePendingUserController,
-  // GetUsersController,
-  UpdatePrivacyHandler,
-  UpdateUserHandler,
-} from "../controllers/UserController";
+import Controllers from "../controllers/Controllers";
 
 const User = (user: Router) => {
-  user.post("/", AddUserController);
-  user.get("/", GetUserController);
-  user.get("/other/:id", GetOtherUserController);
-  user.put("/", UpdateUserHandler);
-  user.put("/privacy/", UpdatePrivacyHandler);
-  user.put("/privacy/allowed/:id", UpdateAllowedUserController);
-  user.put("/privacy/pending/:id", UpdatePendingUserController);
+  user.post("/", Controllers.AddUserController);
+  user.get("/", Controllers.GetUserController);
+  user.get("/other/:id", Controllers.GetOtherUserController);
+  user.put("/", Controllers.UpdateUserHandler);
+  user.put("/privacy/", Controllers.UpdatePrivacyHandler);
+  user.put("/privacy/allowed/:id", Controllers.UpdateAllowedUserController);
+  user.put("/privacy/pending/:id", Controllers.UpdatePendingUserController);
+  user.put("/privacy/blocked/:id", Controllers.UpdateBlockedUserController);
   // user.get("/list/", GetUsersController);
   // user.get("/pending/", GetPendingUsersController);
   // user.get("/allowed/", GetAllowedUsersController);

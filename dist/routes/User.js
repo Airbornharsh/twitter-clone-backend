@@ -1,14 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const UserController_1 = require("../controllers/UserController");
+const Controllers_1 = __importDefault(require("../controllers/Controllers"));
 const User = (user) => {
-    user.post("/", UserController_1.AddUserController);
-    user.get("/", UserController_1.GetUserController);
-    user.get("/other/:id", UserController_1.GetOtherUserController);
-    user.put("/", UserController_1.UpdateUserHandler);
-    user.put("/privacy/", UserController_1.UpdatePrivacyHandler);
-    user.put("/privacy/allowed/:id", UserController_1.UpdateAllowedUserController);
-    user.put("/privacy/pending/:id", UserController_1.UpdatePendingUserController);
+    user.post("/", Controllers_1.default.AddUserController);
+    user.get("/", Controllers_1.default.GetUserController);
+    user.get("/other/:id", Controllers_1.default.GetOtherUserController);
+    user.put("/", Controllers_1.default.UpdateUserHandler);
+    user.put("/privacy/", Controllers_1.default.UpdatePrivacyHandler);
+    user.put("/privacy/allowed/:id", Controllers_1.default.UpdateAllowedUserController);
+    user.put("/privacy/pending/:id", Controllers_1.default.UpdatePendingUserController);
+    user.put("/privacy/blocked/:id", Controllers_1.default.UpdateBlockedUserController);
     // user.get("/list/", GetUsersController);
     // user.get("/pending/", GetPendingUsersController);
     // user.get("/allowed/", GetAllowedUsersController);
