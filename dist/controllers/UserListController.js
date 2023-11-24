@@ -8,7 +8,18 @@ const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const GetUsersController = async (req, res) => {
     try {
-        const users = await User_1.default.find();
+        const email = req.get("email");
+        const search = req.query.search.trim();
+        const user = req.get("email");
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const users = await User_1.default.find({
+            email: { $ne: email },
+            private: false,
+            name: { $regex: search, $options: "i" },
+        });
         res.status(200).json({ message: "Users fetched successfully!", users });
     }
     catch (e) {
