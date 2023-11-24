@@ -11,6 +11,6 @@ const UserList = (user) => {
     list.get("/", Controllers_1.default.GetUsersController);
     // list.get("/pending/", GetPendingUsersController);
     list.get("/allowed/", Controllers_1.default.GetAllowedUsersController);
-    // list.get("/blocked/", GetBlockedUsersController);
+    list.get("/blocked/", Controllers_1.default.GetBlockedUsersController);
 };
 exports.default = UserList;

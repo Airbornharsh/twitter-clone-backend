@@ -9,7 +9,7 @@ const UserList = (user: Router) => {
   list.get("/", Controllers.GetUsersController);
   // list.get("/pending/", GetPendingUsersController);
   list.get("/allowed/", Controllers.GetAllowedUsersController);
-  // list.get("/blocked/", GetBlockedUsersController);
+  list.get("/blocked/", Controllers.GetBlockedUsersController);
 };
 
 export default UserList;
