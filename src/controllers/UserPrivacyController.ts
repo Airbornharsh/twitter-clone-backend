@@ -195,29 +195,29 @@ export const UpdateFollowingUserController: RequestHandler = async (
     }
 
     if (otherUser.private) {
-      let userCheck = false;
+      // let userCheck = false;
 
-      user.allowed.forEach((u: any) => {
-        if (u.toString() === otherUser._id.toString()) {
-          userCheck = true;
-          return;
-        }
+      // user.allowed.forEach((u: any) => {
+      //   if (u.toString() === otherUser._id.toString()) {
+      //     userCheck = true;
+      //     return;
+      //   }
+      // });
+
+      // if (!userCheck) {
+      await otherUser.updateOne({
+        $addToSet: { pending: user._id },
       });
 
-      if (!userCheck) {
-        await otherUser.updateOne({
-          $addToSet: { pending: user._id },
-        });
+      await user.updateOne({
+        $addToSet: { pendingBy: otherUser._id },
+      });
 
-        await user.updateOne({
-          $addToSet: { pendingBy: otherUser._id },
-        });
-
-        res
-          .status(200)
-          .json({ message: "Updated the Followed User", pending: true });
-        return;
-      }
+      res
+        .status(200)
+        .json({ message: "Updated the Followed User", pending: true });
+      return;
+      // }
     }
 
     await user.updateOne({
