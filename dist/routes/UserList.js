@@ -13,5 +13,6 @@ const UserList = (user) => {
     list.get("/allowed/", Controllers_1.default.GetAllowedUsersController);
     list.get("/blocked/", Controllers_1.default.GetBlockedUsersController);
     list.get("/following/", Controllers_1.default.GetFollowingUsersController);
+    list.get("/followers/", Controllers_1.default.GetFollowersUsersController);
 };
 exports.default = UserList;
