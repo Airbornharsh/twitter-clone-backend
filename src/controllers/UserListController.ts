@@ -99,12 +99,36 @@ export const GetPendingUsersController: RequestHandler = async (req, res) => {
 
     const tempUsers = ConvertUserListToPrivateList(users, user);
 
-    res
-      .status(200)
-      .json({
-        message: "Pending Users fetched successfully!",
-        users: tempUsers,
-      });
+    res.status(200).json({
+      message: "Pending Users fetched successfully!",
+      users: tempUsers,
+    });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const GetFollowingUsersController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const users = await UserModel.find({
+      _id: { $in: user.following },
+    });
+
+    const tempUsers = ConvertUserListToPrivateList(users, user);
+
+    res.status(200).json({
+      message: "Following Users fetched successfully!",
+      users: tempUsers,
+    });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
