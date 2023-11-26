@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConvertUserToPrivate = exports.ConvertUserListToPrivateList = void 0;
+exports.ConvertUserListToPrivateList = exports.ConvertUserToPrivate = void 0;
 const AcceptedUser = (user) => {
     return {
         _id: user._id,
@@ -49,22 +49,6 @@ const NotAcceptedUser = (user) => {
         createdAt: user.createdAt,
     };
 };
-const ConvertUserListToPrivateList = (users, user) => {
-    return users.map((otherUser) => {
-        if (otherUser.blocked.some((a) => a.equals(user._id))) {
-            return NotAcceptedUser(otherUser);
-        }
-        if (!otherUser.private) {
-            return AcceptedUser(otherUser);
-        }
-        if (otherUser.allowed.some((a) => a.equals(user._id))) {
-            return AcceptedUser(otherUser);
-        }
-        else
-            return NotAcceptedUser(otherUser);
-    });
-};
-exports.ConvertUserListToPrivateList = ConvertUserListToPrivateList;
 const ConvertUserToPrivate = (otherUser, user) => {
     if (otherUser.blocked.some((a) => a.equals(user._id))) {
         return NotAcceptedUser(otherUser);
@@ -79,3 +63,7 @@ const ConvertUserToPrivate = (otherUser, user) => {
         return NotAcceptedUser(otherUser);
 };
 exports.ConvertUserToPrivate = ConvertUserToPrivate;
+const ConvertUserListToPrivateList = (users, user) => {
+    return users.map((otherUser) => (0, exports.ConvertUserToPrivate)(otherUser, user));
+};
+exports.ConvertUserListToPrivateList = ConvertUserListToPrivateList;
