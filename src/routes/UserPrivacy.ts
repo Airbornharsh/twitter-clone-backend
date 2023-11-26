@@ -8,6 +8,7 @@ const Privacy = (user: Router) => {
 
   privacy.put("/", Controllers.UpdatePrivacyHandler);
   privacy.put("/pending/:id", Controllers.UpdatePendingUserController);
+  privacy.put("/unpending/:id", Controllers.UpdateUnpendingUserController);
   privacy.put("/allowing/:id", Controllers.UpdateAllowingUserController);
   privacy.put("/denying/:id", Controllers.UpdateDenyingUserController);
   privacy.put("/blocking/:id", Controllers.UpdateBlockingUserController);

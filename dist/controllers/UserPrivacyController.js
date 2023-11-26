@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateRemoveFollowerController = exports.UpdateUnfollowingUserController = exports.UpdateFollowingUserController = exports.UpdateUnblockingUserController = exports.UpdateBlockingUserController = exports.UpdateDenyingUserController = exports.UpdatePendingUserController = exports.UpdateAllowingUserController = exports.UpdatePrivacyHandler = void 0;
+exports.UpdateRemoveFollowerController = exports.UpdateUnfollowingUserController = exports.UpdateFollowingUserController = exports.UpdateUnblockingUserController = exports.UpdateBlockingUserController = exports.UpdateUnpendingUserController = exports.UpdateDenyingUserController = exports.UpdatePendingUserController = exports.UpdateAllowingUserController = exports.UpdatePrivacyHandler = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const UpdatePrivacyHandler = async (req, res) => {
@@ -103,6 +103,33 @@ const UpdateDenyingUserController = async (req, res) => {
     }
 };
 exports.UpdateDenyingUserController = UpdateDenyingUserController;
+const UpdateUnpendingUserController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const otherUserId = req.params.id;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const otherUser = await User_1.default.findOne({ _id: otherUserId });
+        if (!otherUser) {
+            res.status(404).json({ message: "User not found!" });
+            return;
+        }
+        await user.updateOne({
+            $pull: { pendingBy: otherUserId },
+        });
+        await otherUser.updateOne({
+            $pull: { pending: user._id },
+        });
+        res.status(200).json({ message: "Updated the Cancelled Pending User" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.UpdateUnpendingUserController = UpdateUnpendingUserController;
 const UpdateBlockingUserController = async (req, res) => {
     try {
         const email = req.get("email");

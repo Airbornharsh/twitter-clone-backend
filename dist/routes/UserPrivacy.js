@@ -10,6 +10,7 @@ const Privacy = (user) => {
     user.use("/privacy", privacy);
     privacy.put("/", Controllers_1.default.UpdatePrivacyHandler);
     privacy.put("/pending/:id", Controllers_1.default.UpdatePendingUserController);
+    privacy.put("/unpending/:id", Controllers_1.default.UpdateUnpendingUserController);
     privacy.put("/allowing/:id", Controllers_1.default.UpdateAllowingUserController);
     privacy.put("/denying/:id", Controllers_1.default.UpdateDenyingUserController);
     privacy.put("/blocking/:id", Controllers_1.default.UpdateBlockingUserController);
