@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import UserModel from "../models/User";
 import { ErrorResponse } from "../helpers/ErrorHelper";
+import { ConvertUserToPrivate } from "../helpers/UserHelper";
 
 export const AddUserController: RequestHandler = async (req, res) => {
   try {
@@ -35,15 +36,16 @@ export const GetUserController: RequestHandler = async (req, res) => {
 export const GetOtherUserController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
-    const otherEmail = req.params.id;
+    const otherUserId = req.params.id;
 
     const user = await UserModel.findOne({ email });
-    const otherUser = await UserModel.findOne({ email: otherEmail });
 
     if (!user) {
       res.status(401).json({ message: "User not allowed!" });
       return;
     }
+
+    const otherUser = await UserModel.findOne({ _id: otherUserId });
 
     if (!otherUser) {
       res.status(404).json({ message: "User not found!" });
@@ -55,46 +57,9 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
       return;
     }
 
-    let userCheck = false;
-    const privateUser = {
-      _id: otherUser?._id,
-      name: "Private User",
-      email: "",
-      userName: "Private User",
-      profileImage: "",
-      coverImage: "",
-      bio: "",
-      dob: "",
-      location: "",
-      website: "",
-    };
+    const privateUser = ConvertUserToPrivate(otherUser, user);
 
-    user?.allowed.forEach((u: any) => {
-      if (u.toString() === otherUser?._id.toString()) {
-        userCheck = true;
-        return;
-      }
-    });
-
-    userCheck &&
-      res.status(200).json({ message: "User Found!", user: otherUser });
-
-    user?.pending.forEach((u: any) => {
-      if (u.toString() === otherUser?._id.toString()) {
-        userCheck = false;
-        return;
-      }
-    });
-
-    user?.blocked.forEach((u: any) => {
-      if (u.toString() === otherUser?._id.toString()) {
-        userCheck = false;
-        return;
-      }
-    });
-
-    if (!userCheck)
-      res.status(200).json({ message: "User not allowed!", user: privateUser });
+    res.status(200).json({ message: "User Found!", user: privateUser });
   } catch (e: any | unknown) {
     ErrorResponse(res, 500, e);
   }

@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { ErrorResponse } from "../helpers/ErrorHelper";
 import UserModel from "../models/User";
-import { ConvertUserListToPrivateList } from "../helpers/UserListHelper";
+import { ConvertUserListToPrivateList } from "../helpers/UserHelper";
 
 export const GetUsersController: RequestHandler = async (req, res) => {
   try {

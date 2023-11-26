@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateUserHandler = exports.GetOtherUserController = exports.GetUserController = exports.AddUserController = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
+const UserHelper_1 = require("../helpers/UserHelper");
 const AddUserController = async (req, res) => {
     try {
         const user = req.body;
@@ -37,13 +38,13 @@ exports.GetUserController = GetUserController;
 const GetOtherUserController = async (req, res) => {
     try {
         const email = req.get("email");
-        const otherEmail = req.params.id;
+        const otherUserId = req.params.id;
         const user = await User_1.default.findOne({ email });
-        const otherUser = await User_1.default.findOne({ email: otherEmail });
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
+        const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
             return;
@@ -52,41 +53,8 @@ const GetOtherUserController = async (req, res) => {
             res.status(200).json({ message: "User Found!", user: otherUser });
             return;
         }
-        let userCheck = false;
-        const privateUser = {
-            _id: otherUser?._id,
-            name: "Private User",
-            email: "",
-            userName: "Private User",
-            profileImage: "",
-            coverImage: "",
-            bio: "",
-            dob: "",
-            location: "",
-            website: "",
-        };
-        user?.allowed.forEach((u) => {
-            if (u.toString() === otherUser?._id.toString()) {
-                userCheck = true;
-                return;
-            }
-        });
-        userCheck &&
-            res.status(200).json({ message: "User Found!", user: otherUser });
-        user?.pending.forEach((u) => {
-            if (u.toString() === otherUser?._id.toString()) {
-                userCheck = false;
-                return;
-            }
-        });
-        user?.blocked.forEach((u) => {
-            if (u.toString() === otherUser?._id.toString()) {
-                userCheck = false;
-                return;
-            }
-        });
-        if (!userCheck)
-            res.status(200).json({ message: "User not allowed!", user: privateUser });
+        const privateUser = (0, UserHelper_1.ConvertUserToPrivate)(otherUser, user);
+        res.status(200).json({ message: "User Found!", user: privateUser });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);

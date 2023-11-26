@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetPendingUsersController = exports.GetBlockedUsersController = exports.GetAllowedUsersController = exports.GetUsersController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
-const UserListHelper_1 = require("../helpers/UserListHelper");
+const UserHelper_1 = require("../helpers/UserHelper");
 const GetUsersController = async (req, res) => {
     try {
         const email = req.get("email");
@@ -20,7 +20,7 @@ const GetUsersController = async (req, res) => {
             email: { $ne: email },
             name: { $regex: search, $options: "i" },
         });
-        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res
             .status(200)
             .json({ message: "Users fetched successfully!", users: tempUsers });
@@ -41,7 +41,7 @@ const GetAllowedUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.allowed },
         });
-        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
             message: "Allowed Users fetched successfully!",
             users: tempUsers,
@@ -63,7 +63,7 @@ const GetBlockedUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.blocked },
         });
-        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
             message: "Blocked Users fetched successfully!",
             users: tempUsers,
@@ -85,7 +85,7 @@ const GetPendingUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.pending },
         });
-        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res
             .status(200)
             .json({
