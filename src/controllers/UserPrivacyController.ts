@@ -88,6 +88,39 @@ export const UpdatePendingUserController: RequestHandler = async (req, res) => {
   }
 };
 
+export const UpdateDenyingUserController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findOne({ _id: otherUserId });
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await user.updateOne({
+      $pull: { pendingBy: otherUserId },
+    });
+
+    await otherUser.updateOne({
+      $pull: { pending: user._id },
+    });
+
+    res.status(200).json({ message: "Updated the Denied User" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const UpdateBlockingUserController: RequestHandler = async (
   req,
   res
