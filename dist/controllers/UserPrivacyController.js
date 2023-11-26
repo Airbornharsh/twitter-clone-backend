@@ -91,10 +91,10 @@ const UpdateDenyingUserController = async (req, res) => {
             return;
         }
         await user.updateOne({
-            $pull: { pendingBy: otherUserId },
+            $pull: { pending: otherUserId },
         });
         await otherUser.updateOne({
-            $pull: { pending: user._id },
+            $pull: { pendingBy: user._id },
         });
         res.status(200).json({ message: "Updated the Denied User" });
     }
