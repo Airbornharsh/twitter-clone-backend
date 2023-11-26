@@ -40,6 +40,7 @@ const GetAllowedUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             _id: { $in: user.allowed },
+            email: { $ne: email },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -62,6 +63,7 @@ const GetBlockedUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             _id: { $in: user.blocked },
+            email: { $ne: email },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -84,6 +86,7 @@ const GetPendingUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             _id: { $in: user.pending },
+            email: { $ne: email },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -106,6 +109,7 @@ const GetFollowingUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             _id: { $in: user.following },
+            email: { $ne: email },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -128,6 +132,7 @@ const GetFollowersUsersController = async (req, res) => {
         }
         const users = await User_1.default.find({
             _id: { $in: user.followers },
+            email: { $ne: email },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({

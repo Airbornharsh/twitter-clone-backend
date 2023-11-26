@@ -43,6 +43,7 @@ export const GetAllowedUsersController: RequestHandler = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $in: user.allowed },
+      email: { $ne: email },
     });
 
     const tempUsers = ConvertUserListToPrivateList(users, user);
@@ -69,6 +70,7 @@ export const GetBlockedUsersController: RequestHandler = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $in: user.blocked },
+      email: { $ne: email },
     });
 
     const tempUsers = ConvertUserListToPrivateList(users, user);
@@ -95,6 +97,7 @@ export const GetPendingUsersController: RequestHandler = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $in: user.pending },
+      email: { $ne: email },
     });
 
     const tempUsers = ConvertUserListToPrivateList(users, user);
@@ -121,6 +124,7 @@ export const GetFollowingUsersController: RequestHandler = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $in: user.following },
+      email: { $ne: email },
     });
 
     const tempUsers = ConvertUserListToPrivateList(users, user);
@@ -147,6 +151,7 @@ export const GetFollowersUsersController: RequestHandler = async (req, res) => {
 
     const users = await UserModel.find({
       _id: { $in: user.followers },
+      email: { $ne: email },
     });
 
     const tempUsers = ConvertUserListToPrivateList(users, user);

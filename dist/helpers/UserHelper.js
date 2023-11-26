@@ -59,11 +59,18 @@ const ConvertUserToPrivate = (otherUser, user) => {
     if (otherUser.allowed.some((a) => a.equals(user._id))) {
         return AcceptedUser(otherUser);
     }
+    if (otherUser._id.equals(user._id))
+        return AcceptedUser(otherUser);
     else
         return NotAcceptedUser(otherUser);
 };
 exports.ConvertUserToPrivate = ConvertUserToPrivate;
 const ConvertUserListToPrivateList = (users, user) => {
-    return users.map((otherUser) => (0, exports.ConvertUserToPrivate)(otherUser, user));
+    return users.map((otherUser) => {
+        if (otherUser._id.equals(user._id))
+            return AcceptedUser(otherUser);
+        else
+            return (0, exports.ConvertUserToPrivate)(otherUser, user);
+    });
 };
 exports.ConvertUserListToPrivateList = ConvertUserListToPrivateList;
