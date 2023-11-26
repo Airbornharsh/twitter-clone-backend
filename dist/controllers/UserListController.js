@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetPendingUsersController = exports.GetBlockedUsersController = exports.GetAllowedUsersController = exports.GetUsersController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
+const UserListHelper_1 = require("../helpers/UserListHelper");
 const GetUsersController = async (req, res) => {
     try {
         const email = req.get("email");
@@ -19,55 +20,7 @@ const GetUsersController = async (req, res) => {
             email: { $ne: email },
             name: { $regex: search, $options: "i" },
         });
-        const tempUsers = users.map((u) => {
-            if (!u.private || u.allowed.some((a) => a.equals(user._id))) {
-                return {
-                    _id: u._id,
-                    name: u.name,
-                    userName: u.userName,
-                    email: u.email,
-                    bio: u.bio,
-                    profileImage: u.profileImage,
-                    coverImage: u.coverImage,
-                    dob: u.dob,
-                    location: u.location,
-                    website: u.website,
-                    private: u.private,
-                    followers: u.followers,
-                    following: u.following,
-                    allowed: u.allowed,
-                    allowedBy: u.allowedBy,
-                    blocked: u.blocked,
-                    blockedBy: u.blockedBy,
-                    pending: u.pending,
-                    pendingBy: u.pendingBy,
-                    createdAt: u.createdAt,
-                };
-            }
-            else
-                return {
-                    _id: u._id,
-                    name: u.name,
-                    userName: u.userName,
-                    email: "",
-                    bio: "",
-                    profileImage: "",
-                    coverImage: "",
-                    dob: "",
-                    location: "",
-                    website: "",
-                    private: true,
-                    followers: [],
-                    following: [],
-                    allowed: u.allowed,
-                    allowedBy: [],
-                    blocked: u.blocked,
-                    blockedBy: [],
-                    pending: [],
-                    pendingBy: [],
-                    createdAt: u.createdAt,
-                };
-        });
+        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
         res
             .status(200)
             .json({ message: "Users fetched successfully!", users: tempUsers });
@@ -88,9 +41,11 @@ const GetAllowedUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.allowed },
         });
-        res
-            .status(200)
-            .json({ message: "Allowed Users fetched successfully!", users });
+        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        res.status(200).json({
+            message: "Allowed Users fetched successfully!",
+            users: tempUsers,
+        });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
@@ -108,9 +63,11 @@ const GetBlockedUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.blocked },
         });
-        res
-            .status(200)
-            .json({ message: "Blocked Users fetched successfully!", users });
+        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
+        res.status(200).json({
+            message: "Blocked Users fetched successfully!",
+            users: tempUsers,
+        });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
@@ -128,9 +85,13 @@ const GetPendingUsersController = async (req, res) => {
         const users = await User_1.default.find({
             _id: { $in: user.pending },
         });
+        const tempUsers = (0, UserListHelper_1.ConvertUserListToPrivateList)(users, user);
         res
             .status(200)
-            .json({ message: "Pending Users fetched successfully!", users });
+            .json({
+            message: "Pending Users fetched successfully!",
+            users: tempUsers,
+        });
     }
     catch (e) {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);

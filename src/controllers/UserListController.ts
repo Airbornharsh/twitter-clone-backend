@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { ErrorResponse } from "../helpers/ErrorHelper";
 import UserModel from "../models/User";
+import { ConvertUserListToPrivateList } from "../helpers/UserListHelper";
 
 export const GetUsersController: RequestHandler = async (req, res) => {
   try {
@@ -19,54 +20,7 @@ export const GetUsersController: RequestHandler = async (req, res) => {
       name: { $regex: search as string, $options: "i" },
     });
 
-    const tempUsers = users.map((u) => {
-      if (!u.private || u.allowed.some((a) => a.equals(user._id))) {
-        return {
-          _id: u._id,
-          name: u.name,
-          userName: u.userName,
-          email: u.email,
-          bio: u.bio,
-          profileImage: u.profileImage,
-          coverImage: u.coverImage,
-          dob: u.dob,
-          location: u.location,
-          website: u.website,
-          private: u.private,
-          followers: u.followers,
-          following: u.following,
-          allowed: u.allowed,
-          allowedBy: u.allowedBy,
-          blocked: u.blocked,
-          blockedBy: u.blockedBy,
-          pending: u.pending,
-          pendingBy: u.pendingBy,
-          createdAt: u.createdAt,
-        };
-      } else
-        return {
-          _id: u._id,
-          name: u.name,
-          userName: u.userName,
-          email: "",
-          bio: "",
-          profileImage: "",
-          coverImage: "",
-          dob: "",
-          location: "",
-          website: "",
-          private: true,
-          followers: [],
-          following: [],
-          allowed: u.allowed,
-          allowedBy: [],
-          blocked: u.blocked,
-          blockedBy: [],
-          pending: [],
-          pendingBy: [],
-          createdAt: u.createdAt,
-        };
-    });
+    const tempUsers = ConvertUserListToPrivateList(users, user);
 
     res
       .status(200)
@@ -91,9 +45,12 @@ export const GetAllowedUsersController: RequestHandler = async (req, res) => {
       _id: { $in: user.allowed },
     });
 
-    res
-      .status(200)
-      .json({ message: "Allowed Users fetched successfully!", users });
+    const tempUsers = ConvertUserListToPrivateList(users, user);
+
+    res.status(200).json({
+      message: "Allowed Users fetched successfully!",
+      users: tempUsers,
+    });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
@@ -114,9 +71,12 @@ export const GetBlockedUsersController: RequestHandler = async (req, res) => {
       _id: { $in: user.blocked },
     });
 
-    res
-      .status(200)
-      .json({ message: "Blocked Users fetched successfully!", users });
+    const tempUsers = ConvertUserListToPrivateList(users, user);
+
+    res.status(200).json({
+      message: "Blocked Users fetched successfully!",
+      users: tempUsers,
+    });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
@@ -137,9 +97,14 @@ export const GetPendingUsersController: RequestHandler = async (req, res) => {
       _id: { $in: user.pending },
     });
 
+    const tempUsers = ConvertUserListToPrivateList(users, user);
+
     res
       .status(200)
-      .json({ message: "Pending Users fetched successfully!", users });
+      .json({
+        message: "Pending Users fetched successfully!",
+        users: tempUsers,
+      });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
