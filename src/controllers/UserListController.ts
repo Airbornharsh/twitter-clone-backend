@@ -159,3 +159,53 @@ export const GetFollowersUsersController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const GetOtherFollowingUsersController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findOne({ _id: otherUserId });
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    if (!otherUser?.private) {
+      const users = await UserModel.find({
+        _id: { $in: otherUser.following },
+      });
+
+      const tempUsers = ConvertUserListToPrivateList(users, user);
+
+      res.status(200).json({ message: "User Found!", tempUsers });
+      return;
+    }
+
+    if (user.following.some((id) => id.toString() === otherUserId)) {
+      const users = await UserModel.find({
+        _id: { $in: otherUser.following },
+      });
+
+      const tempUsers = ConvertUserListToPrivateList(users, user);
+
+      res.status(200).json({ message: "User Found!", users: tempUsers });
+      return;
+    }
+
+    res.status(401).json({ message: "User not allowed!", users: [] });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};

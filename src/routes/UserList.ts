@@ -12,6 +12,7 @@ const UserList = (user: Router) => {
   list.get("/blocked/", Controllers.GetBlockedUsersController);
   list.get("/following/", Controllers.GetFollowingUsersController);
   list.get("/followers/", Controllers.GetFollowersUsersController);
+  list.get("/following/:id", Controllers.GetOtherFollowingUsersController);
 };
 
 export default UserList;
