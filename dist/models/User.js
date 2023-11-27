@@ -117,6 +117,27 @@ const Users = new mongoose_1.Schema({
         required: false,
         default: Date.now(),
     },
+    likedTweets: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Tweets",
+            default: [],
+        },
+    ],
+    bookmarkedTweets: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Tweets",
+            default: [],
+        },
+    ],
+    retweetedTweets: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Tweets",
+            default: [],
+        },
+    ],
 });
 const UserModel = (0, mongoose_1.model)("Users", Users);
 exports.default = UserModel;

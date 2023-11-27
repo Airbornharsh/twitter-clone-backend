@@ -116,6 +116,27 @@ const Users = new Schema({
     required: false,
     default: Date.now(),
   },
+  likedTweets: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tweets",
+      default: [],
+    },
+  ],
+  bookmarkedTweets: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tweets",
+      default: [],
+    },
+  ],
+  retweetedTweets: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tweets",
+      default: [],
+    },
+  ],
 });
 
 const UserModel = model("Users", Users);

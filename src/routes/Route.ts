@@ -1,6 +1,6 @@
 import { Router } from "express";
 import User from "./User";
-import Post from "./Post";
+import Tweet from "./Tweet";
 
 const Route = (router: Router) => {
   router.get("/", (req, res) => {
@@ -8,7 +8,7 @@ const Route = (router: Router) => {
   });
 
   User(router);
-  // Post(post);
+  Tweet(router);
 };
 
 export default Route;
