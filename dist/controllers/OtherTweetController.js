@@ -68,7 +68,9 @@ const GetOtherTweetController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        const tweet = await Tweet_1.default.findById(otherTweetId);
+        const tweet = await Tweet_1.default.findById(otherTweetId)
+            .populate(["userId", "tweetReply"])
+            .exec();
         if (!tweet) {
             res.status(404).json({ message: "Tweet not found!" });
             return;

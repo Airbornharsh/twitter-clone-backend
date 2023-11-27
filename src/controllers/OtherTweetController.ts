@@ -79,7 +79,9 @@ export const GetOtherTweetController: RequestHandler = async (req, res) => {
       return;
     }
 
-    const tweet = await TweetModel.findById(otherTweetId);
+    const tweet = await TweetModel.findById(otherTweetId)
+      .populate(["userId", "tweetReply"])
+      .exec();
 
     if (!tweet) {
       res.status(404).json({ message: "Tweet not found!" });
