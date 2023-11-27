@@ -46,7 +46,9 @@ const GetTweetsController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        const tweets = (await user.populate("tweets")).tweets.sort((a, b) => b.createdAt - a.createdAt);
+        const tweets = (await user.populate("tweets")).tweets
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .filter((tweet) => !tweet.reply);
         res.status(200).json({ message: "Tweets fetched successfully!", tweets });
     }
     catch (e) {
