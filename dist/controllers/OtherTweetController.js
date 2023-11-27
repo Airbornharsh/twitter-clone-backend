@@ -84,6 +84,7 @@ const GetOtherTweetController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
+        tweet.tweetReply = tweet.tweetReply.reverse();
         res.status(200).json({ message: "Tweet found!", tweet });
     }
     catch (e) {

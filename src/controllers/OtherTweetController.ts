@@ -100,6 +100,8 @@ export const GetOtherTweetController: RequestHandler = async (req, res) => {
       return;
     }
 
+    tweet.tweetReply = tweet.tweetReply.reverse();
+
     res.status(200).json({ message: "Tweet found!", tweet });
   } catch (e) {
     ErrorResponse(res, 500, e);
