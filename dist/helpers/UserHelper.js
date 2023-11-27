@@ -22,6 +22,10 @@ const AcceptedUser = (user) => {
         blockedBy: user.blockedBy,
         pending: user.pending,
         pendingBy: user.pendingBy,
+        tweets: user.tweets,
+        likedTweets: user.likedTweets,
+        bookmarkedTweets: user.bookmarkedTweets,
+        retweetedTweets: user.retweetedTweets,
         createdAt: user.createdAt,
     };
 };
@@ -46,6 +50,10 @@ const NotAcceptedUser = (user) => {
         blockedBy: [],
         pending: [],
         pendingBy: [],
+        tweets: [],
+        likedTweets: [],
+        bookmarkedTweets: [],
+        retweetedTweets: [],
         createdAt: user.createdAt,
     };
 };
