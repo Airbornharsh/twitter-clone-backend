@@ -53,13 +53,13 @@ const ConvertUserToPrivate = (otherUser, user) => {
     if (otherUser.blocked.some((a) => a.equals(user._id))) {
         return NotAcceptedUser(otherUser);
     }
-    if (!otherUser.private) {
+    else if (!otherUser.private) {
         return AcceptedUser(otherUser);
     }
-    if (otherUser.allowed.some((a) => a.equals(user._id))) {
+    else if (otherUser.allowed.some((a) => a.equals(user._id))) {
         return AcceptedUser(otherUser);
     }
-    if (otherUser._id.equals(user._id))
+    else if (otherUser._id.equals(user._id))
         return AcceptedUser(otherUser);
     else
         return NotAcceptedUser(otherUser);

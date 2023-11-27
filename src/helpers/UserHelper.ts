@@ -51,14 +51,11 @@ const NotAcceptedUser = (user: any) => {
 export const ConvertUserToPrivate = (otherUser: any, user: any) => {
   if (otherUser.blocked.some((a: any) => a.equals(user._id))) {
     return NotAcceptedUser(otherUser);
-  }
-  if (!otherUser.private) {
+  } else if (!otherUser.private) {
     return AcceptedUser(otherUser);
-  }
-  if (otherUser.allowed.some((a: any) => a.equals(user._id))) {
+  } else if (otherUser.allowed.some((a: any) => a.equals(user._id))) {
     return AcceptedUser(otherUser);
-  }
-  if (otherUser._id.equals(user._id)) return AcceptedUser(otherUser);
+  } else if (otherUser._id.equals(user._id)) return AcceptedUser(otherUser);
   else return NotAcceptedUser(otherUser);
 };
 
