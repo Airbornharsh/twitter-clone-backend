@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Controllers from "../controllers/Controllers";
+import OtherTweet from "./OtherTweet";
 
 const Tweet = (router: Router) => {
   const tweet = Router();
@@ -12,6 +13,8 @@ const Tweet = (router: Router) => {
   tweet.patch("/like/:id", Controllers.UpdateTweetLikeController);
   tweet.patch("/bookmark/:id", Controllers.UpdateTweetBookmarkController);
   tweet.post("/reply/:id", Controllers.AddTweetReplyHandler);
+
+  OtherTweet(tweet);
 };
 
 export default Tweet;

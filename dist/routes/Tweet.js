@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Controllers_1 = __importDefault(require("../controllers/Controllers"));
+const OtherTweet_1 = __importDefault(require("./OtherTweet"));
 const Tweet = (router) => {
     const tweet = (0, express_1.Router)();
     router.use("/tweet", tweet);
@@ -14,5 +15,6 @@ const Tweet = (router) => {
     tweet.patch("/like/:id", Controllers_1.default.UpdateTweetLikeController);
     tweet.patch("/bookmark/:id", Controllers_1.default.UpdateTweetBookmarkController);
     tweet.post("/reply/:id", Controllers_1.default.AddTweetReplyHandler);
+    (0, OtherTweet_1.default)(tweet);
 };
 exports.default = Tweet;
