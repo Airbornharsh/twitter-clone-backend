@@ -10,5 +10,6 @@ const Tweet = (router) => {
     router.use("/tweet", tweet);
     tweet.post("/", Controllers_1.default.AddTweetController);
     tweet.get("/", Controllers_1.default.GetTweetsController);
+    tweet.get("/:id", Controllers_1.default.GetTweetController);
 };
 exports.default = Tweet;

@@ -59,3 +59,28 @@ export const GetTweetsController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const GetTweetController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const tweetId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweet = await TweetModel.findOne({ _id: tweetId, userId: user._id });
+
+    if (!tweet) {
+      res.status(404).json({ message: "Tweet not found!" });
+      return;
+    }
+
+    res.status(200).json({ message: "Tweet fetched successfully!", tweet });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
