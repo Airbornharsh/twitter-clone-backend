@@ -52,7 +52,9 @@ export const GetTweetsController: RequestHandler = async (req, res) => {
       return;
     }
 
-    const tweets = (await user.populate("tweets")).tweets;
+    const tweets = (await user.populate("tweets")).tweets.sort(
+      (a: any, b: any) => b.createdAt - a.createdAt
+    );
 
     res.status(200).json({ message: "Tweets fetched successfully!", tweets });
   } catch (e) {
@@ -97,7 +99,9 @@ export const GetTweetsRepliesController: RequestHandler = async (req, res) => {
       return;
     }
 
-    const tweets = (await user.populate("retweetedTweets")).retweetedTweets;
+    const tweets = (
+      await user.populate("retweetedTweets")
+    ).retweetedTweets.sort((a: any, b: any) => b.createdAt - a.createdAt);
 
     res.status(200).json({ message: "Tweets fetched successfully!", tweets });
   } catch (e) {

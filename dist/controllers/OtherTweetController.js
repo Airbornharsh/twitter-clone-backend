@@ -21,7 +21,9 @@ const GetAllOtherTweetController = async (req, res) => {
             createdAt: -1,
         })
             .populate("userId");
-        tweets = tweets.filter((tweet) => (0, TweetHelper_1.isAuthorised)(user, tweet.userId));
+        tweets = tweets
+            .filter((tweet) => (0, TweetHelper_1.isAuthorised)(user, tweet.userId))
+            .sort((a, b) => b.createdAt - a.createdAt);
         res.status(200).json({ message: "Tweets fetched successfully!", tweets });
     }
     catch (e) {
@@ -47,7 +49,7 @@ const GetOtherTweetsController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        const tweets = (await otherUser.populate("tweets")).tweets;
+        const tweets = (await otherUser.populate("tweets")).tweets.sort((a, b) => b.createdAt - a.createdAt);
         res.status(200).json({ message: "Tweets fetched successfully!", tweets });
     }
     catch (e) {
@@ -103,8 +105,7 @@ const GetOtherTweetsRepliesController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        const tweets = (await otherUser.populate("retweetedTweets"))
-            .retweetedTweets;
+        const tweets = (await otherUser.populate("retweetedTweets")).retweetedTweets.sort((a, b) => b.createdAt - a.createdAt);
         res.status(200).json({ message: "Tweets fetched successfully!", tweets });
     }
     catch (e) {
