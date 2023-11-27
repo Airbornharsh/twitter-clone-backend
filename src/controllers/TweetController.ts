@@ -40,3 +40,22 @@ export const AddTweetController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const GetTweetsController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweets = (await user.populate("tweets")).tweets;
+
+    res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};

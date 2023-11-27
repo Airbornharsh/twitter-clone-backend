@@ -9,5 +9,6 @@ const Tweet = (router) => {
     const tweet = (0, express_1.Router)();
     router.use("/tweet", tweet);
     tweet.post("/", Controllers_1.default.AddTweetController);
+    tweet.get("/", Controllers_1.default.GetTweetsController);
 };
 exports.default = Tweet;

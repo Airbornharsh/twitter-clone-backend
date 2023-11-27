@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AddTweetController = void 0;
+exports.GetTweetsController = exports.AddTweetController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const User_1 = __importDefault(require("../models/User"));
@@ -38,3 +38,19 @@ const AddTweetController = async (req, res) => {
     }
 };
 exports.AddTweetController = AddTweetController;
+const GetTweetsController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const tweets = (await user.populate("tweets")).tweets;
+        res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetTweetsController = GetTweetsController;

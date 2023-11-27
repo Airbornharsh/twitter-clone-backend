@@ -7,6 +7,7 @@ const Tweet = (router: Router) => {
   router.use("/tweet", tweet);
 
   tweet.post("/", Controllers.AddTweetController);
+  tweet.get("/", Controllers.GetTweetsController);
 };
 
 export default Tweet;
