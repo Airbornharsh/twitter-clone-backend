@@ -16,7 +16,9 @@ const GetAllOtherTweetController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        let tweets = await Tweet_1.default.find()
+        let tweets = await Tweet_1.default.find({
+            reply: null,
+        })
             .sort({
             createdAt: -1,
         })
