@@ -7,6 +7,7 @@ const OtherTweet = (tweet: Router) =>{
   tweet.use("/other", otherTweet);
 
   otherTweet.get("/:id", Controllers.GetOtherTweetController);
+  otherTweet.get("/list/:otherUserId", Controllers.GetOtherTweetsController);
 }
 
 export default OtherTweet;

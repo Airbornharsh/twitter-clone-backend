@@ -4,6 +4,38 @@ import UserModel from "../models/User";
 import TweetModel from "../models/Tweet";
 import { isAuthorised } from "../helpers/TweetHelper";
 
+export const GetOtherTweetsController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const otherUserId = req.params.otherUserId;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findById(otherUserId);
+
+    if (!otherUser) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    if (!isAuthorised(user, otherUser)) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweets = (await otherUser.populate("tweets")).tweets;
+
+    res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const GetOtherTweetController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");

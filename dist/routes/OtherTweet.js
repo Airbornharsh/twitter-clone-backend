@@ -9,5 +9,6 @@ const OtherTweet = (tweet) => {
     const otherTweet = (0, express_1.Router)();
     tweet.use("/other", otherTweet);
     otherTweet.get("/:id", Controllers_1.default.GetOtherTweetController);
+    otherTweet.get("/list/:otherUserId", Controllers_1.default.GetOtherTweetsController);
 };
 exports.default = OtherTweet;
