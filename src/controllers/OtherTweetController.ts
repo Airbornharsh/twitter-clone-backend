@@ -15,7 +15,7 @@ export const GetAllOtherTweetController: RequestHandler = async (req, res) => {
       return;
     }
 
-    let tweets = await TweetModel.find({ userId: { $ne: user._id } })
+    let tweets = await TweetModel.find()
       .sort({
         createdAt: -1,
       })
