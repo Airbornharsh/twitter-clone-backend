@@ -116,6 +116,13 @@ const Users = new Schema({
     required: false,
     default: Date.now(),
   },
+  tweets: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tweets",
+      default: [],
+    },
+  ],
   likedTweets: [
     {
       type: Schema.Types.ObjectId,

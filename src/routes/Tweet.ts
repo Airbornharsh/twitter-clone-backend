@@ -1,11 +1,12 @@
 import { Router } from "express";
+import Controllers from "../controllers/Controllers";
 
 const Tweet = (router: Router) => {
   const tweet = Router();
 
-  router.use("/post", tweet);
+  router.use("/tweet", tweet);
 
-  tweet.post("/");
+  tweet.post("/", Controllers.AddTweetController);
 };
 
 export default Tweet;

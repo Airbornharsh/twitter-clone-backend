@@ -18,11 +18,6 @@ const Tweets = new mongoose_1.Schema({
             required: false,
         },
     ],
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-    },
     likedBy: [
         {
             type: mongoose_1.Schema.Types.ObjectId,
@@ -46,6 +41,10 @@ const Tweets = new mongoose_1.Schema({
             ref: "Tweets",
         },
     ],
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
 });
 const TweetModel = (0, mongoose_1.model)("Tweets", Tweets);
 exports.default = TweetModel;

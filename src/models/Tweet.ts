@@ -17,11 +17,6 @@ const Tweets = new Schema({
       required: false,
     },
   ],
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-  },
   likedBy: [
     {
       type: Schema.Types.ObjectId,
@@ -45,6 +40,10 @@ const Tweets = new Schema({
       ref: "Tweets",
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 const TweetModel = model("Tweets", Tweets);

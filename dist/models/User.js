@@ -117,6 +117,13 @@ const Users = new mongoose_1.Schema({
         required: false,
         default: Date.now(),
     },
+    tweets: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Tweets",
+            default: [],
+        },
+    ],
     likedTweets: [
         {
             type: mongoose_1.Schema.Types.ObjectId,
