@@ -3,11 +3,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetOtherTweetsRepliesController = exports.GetOtherTweetController = exports.GetOtherTweetsController = void 0;
+exports.GetOtherTweetsRepliesController = exports.GetOtherTweetController = exports.GetOtherTweetsController = exports.GetAllOtherTweetController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const TweetHelper_1 = require("../helpers/TweetHelper");
+const GetAllOtherTweetController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        let tweets = await Tweet_1.default.find({ userId: { $ne: user._id } })
+            .sort({
+            createdAt: -1,
+        })
+            .populate("userId");
+        tweets = tweets.filter((tweet) => (0, TweetHelper_1.isAuthorised)(user, tweet.userId));
+        res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetAllOtherTweetController = GetAllOtherTweetController;
 const GetOtherTweetsController = async (req, res) => {
     try {
         const email = req.get("email");

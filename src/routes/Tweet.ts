@@ -6,6 +6,8 @@ const Tweet = (router: Router) => {
   const tweet = Router();
 
   router.use("/tweet", tweet);
+  
+  OtherTweet(tweet);
 
   tweet.post("/", Controllers.AddTweetController);
   tweet.get("/", Controllers.GetTweetsController);
@@ -15,7 +17,6 @@ const Tweet = (router: Router) => {
   tweet.patch("/bookmark/:id", Controllers.UpdateTweetBookmarkController);
   tweet.post("/reply/:id", Controllers.AddTweetReplyHandler);
 
-  OtherTweet(tweet);
 };
 
 export default Tweet;

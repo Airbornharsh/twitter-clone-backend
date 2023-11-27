@@ -4,6 +4,31 @@ import UserModel from "../models/User";
 import TweetModel from "../models/Tweet";
 import { isAuthorised } from "../helpers/TweetHelper";
 
+export const GetAllOtherTweetController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    let tweets = await TweetModel.find({ userId: { $ne: user._id } })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("userId");
+
+    tweets = tweets.filter((tweet) => isAuthorised(user, tweet.userId));
+
+    res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const GetOtherTweetsController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");

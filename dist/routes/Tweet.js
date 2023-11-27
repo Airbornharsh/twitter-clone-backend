@@ -9,6 +9,7 @@ const OtherTweet_1 = __importDefault(require("./OtherTweet"));
 const Tweet = (router) => {
     const tweet = (0, express_1.Router)();
     router.use("/tweet", tweet);
+    (0, OtherTweet_1.default)(tweet);
     tweet.post("/", Controllers_1.default.AddTweetController);
     tweet.get("/", Controllers_1.default.GetTweetsController);
     tweet.get("/replies", Controllers_1.default.GetTweetsRepliesController);
@@ -16,6 +17,5 @@ const Tweet = (router) => {
     tweet.patch("/like/:id", Controllers_1.default.UpdateTweetLikeController);
     tweet.patch("/bookmark/:id", Controllers_1.default.UpdateTweetBookmarkController);
     tweet.post("/reply/:id", Controllers_1.default.AddTweetReplyHandler);
-    (0, OtherTweet_1.default)(tweet);
 };
 exports.default = Tweet;
