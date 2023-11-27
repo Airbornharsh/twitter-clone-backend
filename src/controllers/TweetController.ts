@@ -139,3 +139,40 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const UpdateTweetLikeController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const tweetId = req.params.id;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweet = await TweetModel.findById(tweetId);
+
+    if (!tweet) {
+      res.status(404).json({ message: "Tweet not found!" });
+      return;
+    }
+
+    const isLiked = tweet.likedBy.includes(user._id);
+
+    if (isLiked) {
+      await tweet.updateOne({ $pull: { likedBy: user._id } }).exec();
+      await user.updateOne({ $pull: { likedTweets: tweet._id } }).exec();
+    } else {
+      await tweet.updateOne({ $push: { likedBy: user._id } }).exec();
+      await user.updateOne({ $push: { likedTweets: tweet._id } }).exec();
+    }
+
+    res
+      .status(200)
+      .json({ message: "Tweet updated successfully!", isLiked: !isLiked });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
