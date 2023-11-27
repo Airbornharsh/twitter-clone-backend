@@ -11,5 +11,6 @@ const Tweet = (router) => {
     tweet.post("/", Controllers_1.default.AddTweetController);
     tweet.get("/", Controllers_1.default.GetTweetsController);
     tweet.get("/:id", Controllers_1.default.GetTweetController);
+    tweet.post("/reply/:id", Controllers_1.default.AddTweetReplyHandler);
 };
 exports.default = Tweet;

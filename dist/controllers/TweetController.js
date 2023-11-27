@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetTweetController = exports.GetTweetsController = exports.AddTweetController = void 0;
+exports.AddTweetReplyHandler = exports.GetTweetController = exports.GetTweetsController = exports.AddTweetController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const User_1 = __importDefault(require("../models/User"));
@@ -75,3 +75,48 @@ const GetTweetController = async (req, res) => {
     }
 };
 exports.GetTweetController = GetTweetController;
+const AddTweetReplyHandler = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const tweetId = req.params.id;
+        const { title, tweetMedia } = req.body;
+        if (!title) {
+            res.status(400).json({ message: "Title is required!" });
+            return;
+        }
+        if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
+            res.status(400).json({ message: "Media cannot be more than 4!" });
+            return;
+        }
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const tweet = await Tweet_1.default.findById(tweetId);
+        if (!tweet) {
+            res.status(404).json({ message: "Tweet not found!" });
+            return;
+        }
+        const replyTweet = await Tweet_1.default.create({
+            userId: user._id,
+            email: user.email,
+            title,
+            tweetMedia,
+            reply: tweetId,
+        });
+        await user
+            .updateOne({
+            $push: { tweets: replyTweet._id, retweetedTweets: replyTweet._id },
+        })
+            .exec();
+        await tweet.updateOne({ $push: { tweetReply: replyTweet._id } }).exec();
+        res
+            .status(200)
+            .json({ message: "Tweet reply added successfully!", tweet: replyTweet });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.AddTweetReplyHandler = AddTweetReplyHandler;

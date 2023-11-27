@@ -84,3 +84,58 @@ export const GetTweetController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const tweetId = req.params.id;
+
+    const { title, tweetMedia } = req.body;
+
+    if (!title) {
+      res.status(400).json({ message: "Title is required!" });
+      return;
+    }
+
+    if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
+      res.status(400).json({ message: "Media cannot be more than 4!" });
+      return;
+    }
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweet = await TweetModel.findById(tweetId);
+
+    if (!tweet) {
+      res.status(404).json({ message: "Tweet not found!" });
+      return;
+    }
+
+    const replyTweet = await TweetModel.create({
+      userId: user._id,
+      email: user.email,
+      title,
+      tweetMedia,
+      reply: tweetId,
+    });
+
+    await user
+      .updateOne({
+        $push: { tweets: replyTweet._id, retweetedTweets: replyTweet._id },
+      })
+      .exec();
+
+    await tweet.updateOne({ $push: { tweetReply: replyTweet._id } }).exec();
+
+    res
+      .status(200)
+      .json({ message: "Tweet reply added successfully!", tweet: replyTweet });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};

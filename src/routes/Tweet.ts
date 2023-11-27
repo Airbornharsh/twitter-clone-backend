@@ -9,6 +9,7 @@ const Tweet = (router: Router) => {
   tweet.post("/", Controllers.AddTweetController);
   tweet.get("/", Controllers.GetTweetsController);
   tweet.get("/:id", Controllers.GetTweetController);
+  tweet.post("/reply/:id", Controllers.AddTweetReplyHandler);
 };
 
 export default Tweet;
