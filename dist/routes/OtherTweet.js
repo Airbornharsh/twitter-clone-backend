@@ -10,5 +10,6 @@ const OtherTweet = (tweet) => {
     tweet.use("/other", otherTweet);
     otherTweet.get("/:id", Controllers_1.default.GetOtherTweetController);
     otherTweet.get("/list/:otherUserId", Controllers_1.default.GetOtherTweetsController);
+    otherTweet.get("/list/replies/:otherUserId", Controllers_1.default.GetOtherTweetsRepliesController);
 };
 exports.default = OtherTweet;
