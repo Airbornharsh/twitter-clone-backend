@@ -12,6 +12,7 @@ const Tweet = (router) => {
     tweet.get("/", Controllers_1.default.GetTweetsController);
     tweet.get("/:id", Controllers_1.default.GetTweetController);
     tweet.patch("/like/:id", Controllers_1.default.UpdateTweetLikeController);
+    tweet.patch("/bookmark/:id", Controllers_1.default.UpdateTweetBookmarkController);
     tweet.post("/reply/:id", Controllers_1.default.AddTweetReplyHandler);
 };
 exports.default = Tweet;
