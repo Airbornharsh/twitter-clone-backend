@@ -85,6 +85,26 @@ export const GetTweetController: RequestHandler = async (req, res) => {
   }
 };
 
+export const GetTweetsRepliesController: RequestHandler = async (req, res) => {
+  try {
+    console.log("Water");
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const tweets = (await user.populate("retweetedTweets")).retweetedTweets;
+
+    res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
@@ -209,12 +229,10 @@ export const UpdateTweetBookmarkController: RequestHandler = async (
       await user.updateOne({ $push: { bookmarkedTweets: tweet._id } }).exec();
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Tweet updated successfully!",
-        isBookmarked: !isBookmarked,
-      });
+    res.status(200).json({
+      message: "Tweet updated successfully!",
+      isBookmarked: !isBookmarked,
+    });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }

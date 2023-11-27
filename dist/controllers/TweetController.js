@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateTweetBookmarkController = exports.UpdateTweetLikeController = exports.AddTweetReplyHandler = exports.GetTweetController = exports.GetTweetsController = exports.AddTweetController = void 0;
+exports.UpdateTweetBookmarkController = exports.UpdateTweetLikeController = exports.AddTweetReplyHandler = exports.GetTweetsRepliesController = exports.GetTweetController = exports.GetTweetsController = exports.AddTweetController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const User_1 = __importDefault(require("../models/User"));
@@ -75,6 +75,23 @@ const GetTweetController = async (req, res) => {
     }
 };
 exports.GetTweetController = GetTweetController;
+const GetTweetsRepliesController = async (req, res) => {
+    try {
+        console.log("Water");
+        const email = req.get("email");
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const tweets = (await user.populate("retweetedTweets")).retweetedTweets;
+        res.status(200).json({ message: "Tweets fetched successfully!", tweets });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetTweetsRepliesController = GetTweetsRepliesController;
 const AddTweetReplyHandler = async (req, res) => {
     try {
         const email = req.get("email");
@@ -175,9 +192,7 @@ const UpdateTweetBookmarkController = async (req, res) => {
             await tweet.updateOne({ $push: { bookmarkedBy: user._id } }).exec();
             await user.updateOne({ $push: { bookmarkedTweets: tweet._id } }).exec();
         }
-        res
-            .status(200)
-            .json({
+        res.status(200).json({
             message: "Tweet updated successfully!",
             isBookmarked: !isBookmarked,
         });

@@ -9,6 +9,7 @@ const Tweet = (router: Router) => {
 
   tweet.post("/", Controllers.AddTweetController);
   tweet.get("/", Controllers.GetTweetsController);
+  tweet.get("/replies", Controllers.GetTweetsRepliesController);
   tweet.get("/:id", Controllers.GetTweetController);
   tweet.patch("/like/:id", Controllers.UpdateTweetLikeController);
   tweet.patch("/bookmark/:id", Controllers.UpdateTweetBookmarkController);
