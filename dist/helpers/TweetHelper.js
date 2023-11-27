@@ -1,6 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isOtherUserAuthorised = exports.isAuthorised = void 0;
+exports.filterTweet = exports.isOtherUserAuthorised = exports.isAuthorised = void 0;
+const bad_words_1 = __importDefault(require("bad-words"));
+const filter = new bad_words_1.default({ placeHolder: "🤐" });
 const isAuthorised = (user, otherUser) => {
     if (user._id.equals(otherUser._id)) {
         return true;
@@ -57,3 +62,7 @@ const isOtherUserAuthorised = (user, otherUser) => {
     return false;
 };
 exports.isOtherUserAuthorised = isOtherUserAuthorised;
+const filterTweet = (tweet) => {
+    return filter.clean(tweet);
+};
+exports.filterTweet = filterTweet;

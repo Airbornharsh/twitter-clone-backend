@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { ErrorResponse } from "../helpers/ErrorHelper";
 import TweetModel from "../models/Tweet";
 import UserModel from "../models/User";
+import { filterTweet } from "../helpers/TweetHelper";
 
 export const AddTweetController: RequestHandler = async (req, res) => {
   try {
@@ -18,6 +19,11 @@ export const AddTweetController: RequestHandler = async (req, res) => {
 
     if (!title) {
       res.status(400).json({ message: "Title is required!" });
+      return;
+    }
+
+    if (filterTweet(title).includes("🤐")) {
+      res.status(400).json({ message: "Tweet contains bad words!" });
       return;
     }
 
@@ -118,6 +124,11 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
 
     if (!title) {
       res.status(400).json({ message: "Title is required!" });
+      return;
+    }
+
+    if (filterTweet(title).includes("🤐")) {
+      res.status(400).json({ message: "Tweet contains bad words!" });
       return;
     }
 

@@ -1,3 +1,7 @@
+import Filter from "bad-words";
+
+const filter = new Filter({ placeHolder: "🤐" });
+
 export const isAuthorised = (user: any, otherUser: any) => {
   if (user._id.equals(otherUser._id)) {
     return true;
@@ -38,4 +42,8 @@ export const isOtherUserAuthorised = (user: any, otherUser: any) => {
     return false;
   }
   return false;
-}
+};
+
+export const filterTweet = (tweet: string) => {
+  return filter.clean(tweet);
+};

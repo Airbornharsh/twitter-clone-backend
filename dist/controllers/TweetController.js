@@ -7,6 +7,7 @@ exports.UpdateTweetBookmarkController = exports.UpdateTweetLikeController = expo
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const User_1 = __importDefault(require("../models/User"));
+const TweetHelper_1 = require("../helpers/TweetHelper");
 const AddTweetController = async (req, res) => {
     try {
         const email = req.get("email");
@@ -18,6 +19,10 @@ const AddTweetController = async (req, res) => {
         }
         if (!title) {
             res.status(400).json({ message: "Title is required!" });
+            return;
+        }
+        if ((0, TweetHelper_1.filterTweet)(title).includes("🤐")) {
+            res.status(400).json({ message: "Tweet contains bad words!" });
             return;
         }
         if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
@@ -101,6 +106,10 @@ const AddTweetReplyHandler = async (req, res) => {
         const { title, tweetMedia } = req.body;
         if (!title) {
             res.status(400).json({ message: "Title is required!" });
+            return;
+        }
+        if ((0, TweetHelper_1.filterTweet)(title).includes("🤐")) {
+            res.status(400).json({ message: "Tweet contains bad words!" });
             return;
         }
         if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
