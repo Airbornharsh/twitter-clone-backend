@@ -2,6 +2,7 @@ import { Router } from "express";
 import Controllers from "../controllers/Controllers";
 import Privacy from "./UserPrivacy";
 import UserList from "./UserList";
+import Notification from "./Notification";
 
 const User = (router: Router) => {
   const user = Router();
@@ -15,6 +16,7 @@ const User = (router: Router) => {
 
   Privacy(user);
   UserList(user);
+  Notification(user);
 };
 
 export default User;

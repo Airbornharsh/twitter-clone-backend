@@ -7,6 +7,7 @@ const express_1 = require("express");
 const Controllers_1 = __importDefault(require("../controllers/Controllers"));
 const UserPrivacy_1 = __importDefault(require("./UserPrivacy"));
 const UserList_1 = __importDefault(require("./UserList"));
+const Notification_1 = __importDefault(require("./Notification"));
 const User = (router) => {
     const user = (0, express_1.Router)();
     router.use("/user", user);
@@ -16,5 +17,6 @@ const User = (router) => {
     user.put("/", Controllers_1.default.UpdateUserHandler);
     (0, UserPrivacy_1.default)(user);
     (0, UserList_1.default)(user);
+    (0, Notification_1.default)(user);
 };
 exports.default = User;
