@@ -3,6 +3,7 @@ import { ErrorResponse } from "../helpers/ErrorHelper";
 import TweetModel from "../models/Tweet";
 import UserModel from "../models/User";
 import { filterTweet } from "../helpers/TweetHelper";
+import { LikeNotification, Notification } from "../models/Notification";
 
 export const AddTweetController: RequestHandler = async (req, res) => {
   try {
@@ -202,6 +203,22 @@ export const UpdateTweetLikeController: RequestHandler = async (req, res) => {
     } else {
       await tweet.updateOne({ $push: { likedBy: user._id } }).exec();
       await user.updateOne({ $push: { likedTweets: tweet._id } }).exec();
+
+      const likeNotification = await LikeNotification.create({
+        from: user._id,
+        tweetId,
+      });
+
+      const notification = await Notification.create({
+        to: tweet.userId,
+        tweetId,
+        type: "like",
+        notificationId: likeNotification._id,
+      });
+
+      await UserModel.findByIdAndUpdate(tweet.userId, {
+        $push: { notifications: notification._id },
+      }).exec();
     }
 
     res

@@ -112,11 +112,6 @@ const Users = new mongoose_1.Schema({
             default: [],
         },
     ],
-    createdAt: {
-        type: Date,
-        required: false,
-        default: Date.now(),
-    },
     tweets: [
         {
             type: mongoose_1.Schema.Types.ObjectId,
@@ -145,6 +140,18 @@ const Users = new mongoose_1.Schema({
             default: [],
         },
     ],
+    notifications: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Notifications",
+            default: [],
+        },
+    ],
+    createdAt: {
+        type: Date,
+        required: false,
+        default: Date.now(),
+    },
 });
 const UserModel = (0, mongoose_1.model)("Users", Users);
 exports.default = UserModel;

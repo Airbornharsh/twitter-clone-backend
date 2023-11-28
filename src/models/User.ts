@@ -111,11 +111,6 @@ const Users = new Schema({
       default: [],
     },
   ],
-  createdAt: {
-    type: Date,
-    required: false,
-    default: Date.now(),
-  },
   tweets: [
     {
       type: Schema.Types.ObjectId,
@@ -144,6 +139,18 @@ const Users = new Schema({
       default: [],
     },
   ],
+  notifications: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Notifications",
+      default: [],
+    },
+  ],
+  createdAt: {
+    type: Date,
+    required: false,
+    default: Date.now(),
+  },
 });
 
 const UserModel = model("Users", Users);

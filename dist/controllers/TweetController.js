@@ -8,6 +8,7 @@ const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Tweet_1 = __importDefault(require("../models/Tweet"));
 const User_1 = __importDefault(require("../models/User"));
 const TweetHelper_1 = require("../helpers/TweetHelper");
+const Notification_1 = require("../models/Notification");
 const AddTweetController = async (req, res) => {
     try {
         const email = req.get("email");
@@ -170,6 +171,19 @@ const UpdateTweetLikeController = async (req, res) => {
         else {
             await tweet.updateOne({ $push: { likedBy: user._id } }).exec();
             await user.updateOne({ $push: { likedTweets: tweet._id } }).exec();
+            const likeNotification = await Notification_1.LikeNotification.create({
+                from: user._id,
+                tweetId,
+            });
+            const notification = await Notification_1.Notification.create({
+                to: tweet.userId,
+                tweetId,
+                type: "like",
+                notificationId: likeNotification._id,
+            });
+            await User_1.default.findByIdAndUpdate(tweet.userId, {
+                $push: { notifications: notification._id },
+            }).exec();
         }
         res
             .status(200)
