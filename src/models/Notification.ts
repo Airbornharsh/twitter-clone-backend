@@ -8,11 +8,18 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ["generic", "directMessage", "follow", "like", "reply"],
+    enum: [
+      "genericnotifications",
+      "directmessagenotifications",
+      "follownotifications",
+      "likenotifications",
+      "replynotifications",
+    ],
     required: true,
   },
   notificationId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "type",
     required: true,
   },
   createdAt: {
@@ -21,7 +28,7 @@ const notificationSchema = new mongoose.Schema({
   },
 });
 
-const Notification = mongoose.model("Notifications", notificationSchema);
+const NotificationModel = mongoose.model("Notifications", notificationSchema);
 
 const genericNotificationSchema = new mongoose.Schema({
   from: {
@@ -39,7 +46,7 @@ const genericNotificationSchema = new mongoose.Schema({
   },
 });
 
-const GenericNotification = mongoose.model(
+const GenericNotificationModel = mongoose.model(
   "GenericNotifications",
   genericNotificationSchema
 );
@@ -60,7 +67,7 @@ const directMessageNotificationSchema = new mongoose.Schema({
   },
 });
 
-const DirectMessageNotification = mongoose.model(
+const DirectMessageNotificationModel = mongoose.model(
   "DirectMessageNotifications",
   directMessageNotificationSchema
 );
@@ -77,7 +84,7 @@ const followNotificationSchema = new mongoose.Schema({
   },
 });
 
-const FollowNotification = mongoose.model(
+const FollowNotificationModel = mongoose.model(
   "FollowNotifications",
   followNotificationSchema
 );
@@ -99,7 +106,7 @@ const likeNotificationSchema = new mongoose.Schema({
   },
 });
 
-const LikeNotification = mongoose.model(
+const LikeNotificationModel = mongoose.model(
   "LikeNotifications",
   likeNotificationSchema
 );
@@ -121,16 +128,16 @@ const replyNotificationSchema = new mongoose.Schema({
   },
 });
 
-const ReplyNotification = mongoose.model(
+const ReplyNotificationModel = mongoose.model(
   "ReplyNotifications",
   replyNotificationSchema
 );
 
 export {
-  Notification,
-  GenericNotification,
-  DirectMessageNotification,
-  FollowNotification,
-  LikeNotification,
-  ReplyNotification,
+  NotificationModel,
+  GenericNotificationModel,
+  DirectMessageNotificationModel,
+  FollowNotificationModel,
+  LikeNotificationModel,
+  ReplyNotificationModel,
 };

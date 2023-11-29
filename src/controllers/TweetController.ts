@@ -3,7 +3,11 @@ import { ErrorResponse } from "../helpers/ErrorHelper";
 import TweetModel from "../models/Tweet";
 import UserModel from "../models/User";
 import { filterTweet } from "../helpers/TweetHelper";
-import { LikeNotification, Notification } from "../models/Notification";
+import {
+  LikeNotificationModel,
+  NotificationModel,
+  ReplyNotificationModel,
+} from "../models/Notification";
 
 export const AddTweetController: RequestHandler = async (req, res) => {
   try {
@@ -168,6 +172,22 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
 
     await tweet.updateOne({ $push: { tweetReply: replyTweet._id } }).exec();
 
+    const replyNotification = await ReplyNotificationModel.create({
+      from: user._id,
+      tweetId,
+    });
+
+    const notification = await NotificationModel.create({
+      to: tweet.userId,
+      tweetId,
+      type: "replynotifications",
+      notificationId: replyNotification._id,
+    });
+
+    await UserModel.findByIdAndUpdate(tweet.userId, {
+      $push: { notifications: notification._id },
+    }).exec();
+
     res
       .status(200)
       .json({ message: "Tweet reply added successfully!", tweet: replyTweet });
@@ -204,15 +224,15 @@ export const UpdateTweetLikeController: RequestHandler = async (req, res) => {
       await tweet.updateOne({ $push: { likedBy: user._id } }).exec();
       await user.updateOne({ $push: { likedTweets: tweet._id } }).exec();
 
-      const likeNotification = await LikeNotification.create({
+      const likeNotification = await LikeNotificationModel.create({
         from: user._id,
         tweetId,
       });
 
-      const notification = await Notification.create({
+      const notification = await NotificationModel.create({
         to: tweet.userId,
         tweetId,
-        type: "like",
+        type: "likenotifications",
         notificationId: likeNotification._id,
       });
 

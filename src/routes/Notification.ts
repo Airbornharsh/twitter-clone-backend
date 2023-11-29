@@ -1,13 +1,12 @@
 import { Router } from "express";
+import Controllers from "../controllers/Controllers";
 
 const Notification = (user: Router) => {
   const notification = Router();
 
   user.use("/notification", notification);
 
-  notification.get("/", (req, res) => {
-    res.json({ message: "Hello from notification!" });
-  });
+  notification.get("/", Controllers.GetNotificationsController);
 };
 
 export default Notification;

@@ -140,6 +140,19 @@ const AddTweetReplyHandler = async (req, res) => {
         })
             .exec();
         await tweet.updateOne({ $push: { tweetReply: replyTweet._id } }).exec();
+        const replyNotification = await Notification_1.ReplyNotificationModel.create({
+            from: user._id,
+            tweetId,
+        });
+        const notification = await Notification_1.NotificationModel.create({
+            to: tweet.userId,
+            tweetId,
+            type: "replynotifications",
+            notificationId: replyNotification._id,
+        });
+        await User_1.default.findByIdAndUpdate(tweet.userId, {
+            $push: { notifications: notification._id },
+        }).exec();
         res
             .status(200)
             .json({ message: "Tweet reply added successfully!", tweet: replyTweet });
@@ -171,14 +184,14 @@ const UpdateTweetLikeController = async (req, res) => {
         else {
             await tweet.updateOne({ $push: { likedBy: user._id } }).exec();
             await user.updateOne({ $push: { likedTweets: tweet._id } }).exec();
-            const likeNotification = await Notification_1.LikeNotification.create({
+            const likeNotification = await Notification_1.LikeNotificationModel.create({
                 from: user._id,
                 tweetId,
             });
-            const notification = await Notification_1.Notification.create({
+            const notification = await Notification_1.NotificationModel.create({
                 to: tweet.userId,
                 tweetId,
-                type: "like",
+                type: "likenotifications",
                 notificationId: likeNotification._id,
             });
             await User_1.default.findByIdAndUpdate(tweet.userId, {
