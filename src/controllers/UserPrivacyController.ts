@@ -1,6 +1,10 @@
 import { RequestHandler } from "express";
 import UserModel from "../models/User";
 import { ErrorResponse } from "../helpers/ErrorHelper";
+import {
+  FollowNotificationModel,
+  NotificationModel,
+} from "../models/Notification";
 
 export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
   try {
@@ -264,16 +268,6 @@ export const UpdateFollowingUserController: RequestHandler = async (
     }
 
     if (otherUser.private) {
-      // let userCheck = false;
-
-      // user.allowed.forEach((u: any) => {
-      //   if (u.toString() === otherUser._id.toString()) {
-      //     userCheck = true;
-      //     return;
-      //   }
-      // });
-
-      // if (!userCheck) {
       await otherUser.updateOne({
         $addToSet: { pending: user._id },
       });
@@ -286,7 +280,6 @@ export const UpdateFollowingUserController: RequestHandler = async (
         .status(200)
         .json({ message: "Updated the Followed User", pending: true });
       return;
-      // }
     }
 
     await user.updateOne({
@@ -305,6 +298,20 @@ export const UpdateFollowingUserController: RequestHandler = async (
         allowedBy: user._id,
         pendingBy: user._id,
       },
+    });
+
+    const FollowNotification = await FollowNotificationModel.create({
+      from: user._id,
+    });
+
+    const notification = await NotificationModel.create({
+      to: otherUser._id,
+      type: "follownotifications",
+      notificationId: FollowNotification._id,
+    });
+
+    await UserModel.findByIdAndUpdate(otherUser._id, {
+      $push: { notifications: notification._id },
     });
 
     res

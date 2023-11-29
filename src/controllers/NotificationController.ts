@@ -53,7 +53,13 @@ export const GetNotificationsController: RequestHandler = async (req, res) => {
 
     const followNotifications = await FollowNotificationModel.find({
       _id: { $in: followNotificationIds },
-    }).populate("from");
+    }).populate([
+      {
+        path: "from",
+        model: "Users",
+        select: ["name", "userName", "profileImage", "createdAt"],
+      },
+    ]);
 
     const likeNotifications = await LikeNotificationModel.find({
       _id: { $in: likeNotificationIds },

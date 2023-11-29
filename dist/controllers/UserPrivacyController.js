@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateRemoveFollowerController = exports.UpdateUnfollowingUserController = exports.UpdateFollowingUserController = exports.UpdateUnblockingUserController = exports.UpdateBlockingUserController = exports.UpdateUnpendingUserController = exports.UpdateDenyingUserController = exports.UpdatePendingUserController = exports.UpdateAllowingUserController = exports.UpdatePrivacyHandler = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
+const Notification_1 = require("../models/Notification");
 const UpdatePrivacyHandler = async (req, res) => {
     try {
         const email = req.get("email");
@@ -211,14 +212,6 @@ const UpdateFollowingUserController = async (req, res) => {
             return;
         }
         if (otherUser.private) {
-            // let userCheck = false;
-            // user.allowed.forEach((u: any) => {
-            //   if (u.toString() === otherUser._id.toString()) {
-            //     userCheck = true;
-            //     return;
-            //   }
-            // });
-            // if (!userCheck) {
             await otherUser.updateOne({
                 $addToSet: { pending: user._id },
             });
@@ -229,7 +222,6 @@ const UpdateFollowingUserController = async (req, res) => {
                 .status(200)
                 .json({ message: "Updated the Followed User", pending: true });
             return;
-            // }
         }
         await user.updateOne({
             $addToSet: { following: otherUserId },
@@ -246,6 +238,17 @@ const UpdateFollowingUserController = async (req, res) => {
                 allowedBy: user._id,
                 pendingBy: user._id,
             },
+        });
+        const FollowNotification = await Notification_1.FollowNotificationModel.create({
+            from: user._id,
+        });
+        const notification = await Notification_1.NotificationModel.create({
+            to: otherUser._id,
+            type: "follownotifications",
+            notificationId: FollowNotification._id,
+        });
+        await User_1.default.findByIdAndUpdate(otherUser._id, {
+            $push: { notifications: notification._id },
         });
         res
             .status(200)
