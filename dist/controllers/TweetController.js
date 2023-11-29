@@ -146,9 +146,7 @@ const AddTweetReplyHandler = async (req, res) => {
         });
         const notification = await Notification_1.NotificationModel.create({
             to: tweet.userId,
-            tweetId,
-            type: "replynotifications",
-            notificationId: replyNotification._id,
+            replyNotification: replyNotification._id,
         });
         await User_1.default.findByIdAndUpdate(tweet.userId, {
             $push: { notifications: notification._id },
@@ -191,8 +189,7 @@ const UpdateTweetLikeController = async (req, res) => {
             const notification = await Notification_1.NotificationModel.create({
                 to: tweet.userId,
                 tweetId,
-                type: "likenotifications",
-                notificationId: likeNotification._id,
+                likeNotification: likeNotification._id,
             });
             await User_1.default.findByIdAndUpdate(tweet.userId, {
                 $push: { notifications: notification._id },

@@ -14,83 +14,80 @@ const GetNotificationsController = async (req, res) => {
             res.status(401).json({ message: "User not allowed!" });
             return;
         }
-        const notifications = await Notification_1.NotificationModel.find({ to: user._id });
-        const genericNotificationIds = [];
-        const directMessageNotificationIds = [];
-        const followNotificationIds = [];
-        const likeNotificationIds = [];
-        const replyNotificationIds = [];
-        notifications.forEach((notification) => {
-            if (notification.type === "genericnotifications") {
-                genericNotificationIds.push(notification.notificationId);
-            }
-            else if (notification.type === "directmessagenotifications") {
-                directMessageNotificationIds.push(notification.notificationId);
-            }
-            else if (notification.type === "follownotifications") {
-                followNotificationIds.push(notification.notificationId);
-            }
-            else if (notification.type === "likenotifications") {
-                likeNotificationIds.push(notification.notificationId);
-            }
-            else if (notification.type === "replynotifications") {
-                replyNotificationIds.push(notification.notificationId);
-            }
+        const notifications = await Notification_1.NotificationModel.find({ to: user._id })
+            .populate([
+            {
+                path: "genericNotification",
+                model: "GenericNotifications",
+                populate: [
+                    {
+                        path: "from",
+                        model: "Users",
+                        select: ["name", "userName", "profileImage", "createdAt"],
+                    },
+                ],
+            },
+            {
+                path: "directMessageNotification",
+                model: "DirectMessageNotifications",
+                populate: [
+                    {
+                        path: "from",
+                        model: "Users",
+                        select: ["name", "userName", "profileImage", "createdAt"],
+                    },
+                ],
+            },
+            {
+                path: "followNotification",
+                model: "FollowNotifications",
+                populate: [
+                    {
+                        path: "from",
+                        model: "Users",
+                        select: ["name", "userName", "profileImage", "createdAt"],
+                    },
+                ],
+            },
+            {
+                path: "likeNotification",
+                model: "LikeNotifications",
+                populate: [
+                    {
+                        path: "from",
+                        model: "Users",
+                        select: ["name", "userName", "profileImage", "createdAt"],
+                    },
+                    {
+                        path: "tweetId",
+                        model: "Tweets",
+                        select: ["title", "tweetMedia", "createdAt"],
+                    },
+                ],
+            },
+            {
+                path: "replyNotification",
+                model: "ReplyNotifications",
+                populate: [
+                    {
+                        path: "from",
+                        model: "Users",
+                        select: ["name", "userName", "profileImage", "createdAt"],
+                    },
+                    {
+                        path: "tweetId",
+                        model: "Tweets",
+                        select: ["title", "tweetMedia", "createdAt"],
+                    },
+                ],
+            },
+        ])
+            .sort({
+            createdAt: -1,
         });
-        const genericNotifications = await Notification_1.GenericNotificationModel.find({
-            _id: { $in: genericNotificationIds },
-        }).populate("from");
-        const directMessageNotifications = await Notification_1.DirectMessageNotificationModel.find({
-            _id: { $in: directMessageNotificationIds },
-        }).populate("from");
-        const followNotifications = await Notification_1.FollowNotificationModel.find({
-            _id: { $in: followNotificationIds },
-        }).populate([
-            {
-                path: "from",
-                model: "Users",
-                select: ["name", "userName", "profileImage", "createdAt"],
-            },
-        ]);
-        const likeNotifications = await Notification_1.LikeNotificationModel.find({
-            _id: { $in: likeNotificationIds },
-        }).populate([
-            {
-                path: "from",
-                model: "Users",
-                select: ["name", "userName", "profileImage", "createdAt"],
-            },
-            {
-                path: "tweetId",
-                model: "Tweets",
-                select: ["title", "tweetMedia", "createdAt"],
-            },
-        ]);
-        const replyNotifications = await Notification_1.ReplyNotificationModel.find({
-            _id: { $in: replyNotificationIds },
-        }).populate([
-            {
-                path: "from",
-                model: "Users",
-                select: ["name", "userName", "profileImage", "createdAt"],
-            },
-            {
-                path: "tweetId",
-                model: "Tweets",
-                select: ["title", "tweetMedia", "createdAt"],
-            },
-        ]);
-        const allNotifications = [
-            ...genericNotifications,
-            ...directMessageNotifications,
-            ...followNotifications,
-            ...likeNotifications,
-            ...replyNotifications,
-        ];
-        const sortedNotifications = allNotifications.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         res.status(200).json({
             message: "Notifications found!",
-            notifications: sortedNotifications,
+            notifications: notifications,
         });
     }
     catch (e) { }

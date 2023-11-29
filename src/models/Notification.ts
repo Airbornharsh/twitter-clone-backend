@@ -6,21 +6,30 @@ const notificationSchema = new mongoose.Schema({
     ref: "Users",
     required: true,
   },
-  type: {
-    type: String,
-    enum: [
-      "genericnotifications",
-      "directmessagenotifications",
-      "follownotifications",
-      "likenotifications",
-      "replynotifications",
-    ],
-    required: true,
-  },
-  notificationId: {
+  genericNotification: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "type",
-    required: true,
+    ref: "GenericNotifications",
+    default: null,
+  },
+  directMessageNotification: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "DirectMessageNotifications",
+    default: null,
+  },
+  followNotification: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FollowNotifications",
+    default: null,
+  },
+  likeNotification: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "LikeNotifications",
+    default: null,
+  },
+  replyNotification: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ReplyNotifications",
+    default: null,
   },
   createdAt: {
     type: Date,

@@ -244,8 +244,7 @@ const UpdateFollowingUserController = async (req, res) => {
         });
         const notification = await Notification_1.NotificationModel.create({
             to: otherUser._id,
-            type: "follownotifications",
-            notificationId: FollowNotification._id,
+            followNotification: FollowNotification._id,
         });
         await User_1.default.findByIdAndUpdate(otherUser._id, {
             $push: { notifications: notification._id },

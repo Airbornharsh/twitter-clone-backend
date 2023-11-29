@@ -306,8 +306,7 @@ export const UpdateFollowingUserController: RequestHandler = async (
 
     const notification = await NotificationModel.create({
       to: otherUser._id,
-      type: "follownotifications",
-      notificationId: FollowNotification._id,
+      followNotification: FollowNotification._id,
     });
 
     await UserModel.findByIdAndUpdate(otherUser._id, {

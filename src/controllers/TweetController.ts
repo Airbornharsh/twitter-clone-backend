@@ -179,9 +179,7 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
 
     const notification = await NotificationModel.create({
       to: tweet.userId,
-      tweetId,
-      type: "replynotifications",
-      notificationId: replyNotification._id,
+      replyNotification: replyNotification._id,
     });
 
     await UserModel.findByIdAndUpdate(tweet.userId, {
@@ -232,8 +230,7 @@ export const UpdateTweetLikeController: RequestHandler = async (req, res) => {
       const notification = await NotificationModel.create({
         to: tweet.userId,
         tweetId,
-        type: "likenotifications",
-        notificationId: likeNotification._id,
+        likeNotification: likeNotification._id,
       });
 
       await UserModel.findByIdAndUpdate(tweet.userId, {
