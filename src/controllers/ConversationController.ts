@@ -39,12 +39,10 @@ export const CreateConversationController: RequestHandler = async (
     });
 
     if (conversationExist) {
-      res
-        .status(200)
-        .json({
-          message: "Conversation exist!",
-          conversation: conversationExist,
-        });
+      res.status(200).json({
+        message: "Conversation exist!",
+        conversation: conversationExist,
+      });
       return;
     }
 
@@ -61,6 +59,30 @@ export const CreateConversationController: RequestHandler = async (
     res
       .status(200)
       .json({ message: "Conversation created successfully!", conversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const GetConservationsController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const conversations = await ConversationModel.find({
+      members: { $in: [user._id] },
+    }).populate({
+      path: "members",
+      select: "name userName profileImage",
+    });
+
+    res.status(200).json({ message: "Conversations found!", conversations });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }

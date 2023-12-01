@@ -9,7 +9,7 @@ const Conservation = (user) => {
     const conservation = (0, express_1.Router)();
     user.use("/conversation", conservation);
     conservation.post("/", Controllers_1.default.CreateConversationController);
-    // conservation.get("/", Controllers.GetConservationsController);
+    conservation.get("/", Controllers_1.default.GetConservationsController);
     // conservation.get("/:id", Controllers.GetConservationController);
     // conservation.put("/:id", Controllers.UpdateConservationController);
     // conservation.delete("/:id", Controllers.DeleteConservationController);

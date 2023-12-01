@@ -7,7 +7,7 @@ const Conservation = (user: Router) => {
   user.use("/conversation", conservation);
 
   conservation.post("/", Controllers.CreateConversationController);
-  // conservation.get("/", Controllers.GetConservationsController);
+  conservation.get("/", Controllers.GetConservationsController);
   // conservation.get("/:id", Controllers.GetConservationController);
   // conservation.put("/:id", Controllers.UpdateConservationController);
   // conservation.delete("/:id", Controllers.DeleteConservationController);
