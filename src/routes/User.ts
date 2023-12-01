@@ -3,6 +3,7 @@ import Controllers from "../controllers/Controllers";
 import Privacy from "./UserPrivacy";
 import UserList from "./UserList";
 import Notification from "./Notification";
+import Conservation from "./Conservation";
 
 const User = (router: Router) => {
   const user = Router();
@@ -17,6 +18,7 @@ const User = (router: Router) => {
   Privacy(user);
   UserList(user);
   Notification(user);
+  Conservation(user);
 };
 
 export default User;

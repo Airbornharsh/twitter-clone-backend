@@ -4,6 +4,7 @@ import * as userListController from "./UserListController";
 import * as tweetController from "./TweetController";
 import * as otherTweetController from "./OtherTweetController";
 import * as notificationController from "./NotificationController";
+import * as ConversationController from "./ConversationController";
 
 export default {
   ...userController,
@@ -12,4 +13,5 @@ export default {
   ...tweetController,
   ...otherTweetController,
   ...notificationController,
+  ...ConversationController,
 };

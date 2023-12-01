@@ -1,0 +1,67 @@
+import { RequestHandler } from "express";
+import { ErrorResponse } from "../helpers/ErrorHelper";
+import UserModel from "../models/User";
+import { ConversationModel } from "../models/Conversation";
+
+export const CreateConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { userId } = req.body;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const user2 = await UserModel.findOne({ _id: userId });
+
+    if (!user2) {
+      res.status(400).json({ message: "User not found!" });
+      return;
+    }
+
+    if (
+      user2.private &&
+      user._id.toString() !== user2._id.toString() &&
+      !user2.allowed.includes(user._id)
+    ) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const conversationExist = await ConversationModel.findOne({
+      members: { $all: [user._id, user2._id] },
+    });
+
+    if (conversationExist) {
+      res
+        .status(200)
+        .json({
+          message: "Conversation exist!",
+          conversation: conversationExist,
+        });
+      return;
+    }
+
+    const conversation = await ConversationModel.create({
+      members: [user._id, user2._id],
+    });
+
+    await user.updateOne({ $push: { conversations: conversation._id } }).exec();
+
+    await user2
+      .updateOne({ $push: { conversations: conversation._id } })
+      .exec();
+
+    res
+      .status(200)
+      .json({ message: "Conversation created successfully!", conversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};

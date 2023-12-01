@@ -147,6 +147,13 @@ const Users = new mongoose_1.Schema({
             default: [],
         },
     ],
+    conversations: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Conversations",
+            default: [],
+        },
+    ],
     createdAt: {
         type: Date,
         required: false,

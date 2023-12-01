@@ -29,6 +29,7 @@ const userListController = __importStar(require("./UserListController"));
 const tweetController = __importStar(require("./TweetController"));
 const otherTweetController = __importStar(require("./OtherTweetController"));
 const notificationController = __importStar(require("./NotificationController"));
+const ConversationController = __importStar(require("./ConversationController"));
 exports.default = {
     ...userController,
     ...userPrivacyController,
@@ -36,4 +37,5 @@ exports.default = {
     ...tweetController,
     ...otherTweetController,
     ...notificationController,
+    ...ConversationController,
 };
