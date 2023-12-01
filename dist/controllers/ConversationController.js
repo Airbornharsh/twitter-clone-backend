@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetConservationsController = exports.CreateConversationController = void 0;
+exports.GetConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Conversation_1 = require("../models/Conversation");
@@ -74,3 +74,49 @@ const GetConservationsController = async (req, res) => {
     }
 };
 exports.GetConservationsController = GetConservationsController;
+const GetConservationController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const conversationId = req.params.id;
+        const conversation = await Conversation_1.ConversationModel.findOne({
+            _id: conversationId,
+            members: { $in: [user._id] },
+        }).populate([
+            {
+                path: "members",
+                select: "name userName profileImage",
+            },
+            {
+                path: "messages",
+                populate: [
+                    {
+                        path: "sender",
+                        select: "name userName profileImage",
+                    },
+                    {
+                        path: "recieve",
+                        select: "name userName profileImage",
+                    },
+                ],
+                options: {
+                    limit: 20,
+                    sort: { createdAt: -1 },
+                },
+            },
+        ]);
+        if (!conversation) {
+            res.status(404).json({ message: "Conversation not found!" });
+            return;
+        }
+        res.status(200).json({ message: "Conversation found!", conversation });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetConservationController = GetConservationController;
