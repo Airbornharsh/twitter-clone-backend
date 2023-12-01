@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendMessageController = exports.GetConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
+exports.ReadMessageController = exports.SendMessageController = exports.GetConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Conversation_1 = require("../models/Conversation");
@@ -99,7 +99,7 @@ const GetConservationController = async (req, res) => {
                         select: "name userName profileImage",
                     },
                     {
-                        path: "recieve",
+                        path: "reciever",
                         select: "name userName profileImage",
                     },
                 ],
@@ -160,3 +160,37 @@ const SendMessageController = async (req, res) => {
     }
 };
 exports.SendMessageController = SendMessageController;
+const ReadMessageController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const conversationId = req.params.id;
+        const messageId = req.params.messageId;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const conversation = await Conversation_1.ConversationModel.findOne({
+            _id: conversationId,
+            members: { $in: [user._id] },
+        });
+        if (!conversation) {
+            res.status(404).json({ message: "Conversation not found!" });
+            return;
+        }
+        const message = await Conversation_1.MessageModel.findOne({
+            _id: messageId,
+            conversationId,
+        });
+        if (!message) {
+            res.status(404).json({ message: "Message not found!" });
+            return;
+        }
+        await message.updateOne({ read: true });
+        res.status(200).json({ message: "Message read successfully!" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.ReadMessageController = ReadMessageController;

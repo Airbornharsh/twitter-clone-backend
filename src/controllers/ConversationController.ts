@@ -117,7 +117,7 @@ export const GetConservationController: RequestHandler = async (req, res) => {
             select: "name userName profileImage",
           },
           {
-            path: "recieve",
+            path: "reciever",
             select: "name userName profileImage",
           },
         ],
@@ -182,6 +182,47 @@ export const SendMessageController: RequestHandler = async (req, res) => {
     });
 
     res.status(200).json({ message: "Message sent successfully!", newMessage });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const ReadMessageController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const conversationId = req.params.id;
+    const messageId = req.params.messageId;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const conversation = await ConversationModel.findOne({
+      _id: conversationId,
+      members: { $in: [user._id] },
+    });
+
+    if (!conversation) {
+      res.status(404).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    const message = await MessageModel.findOne({
+      _id: messageId,
+      conversationId,
+    });
+
+    if (!message) {
+      res.status(404).json({ message: "Message not found!" });
+      return;
+    }
+
+    await message.updateOne({ read: true });
+
+    res.status(200).json({ message: "Message read successfully!" });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }

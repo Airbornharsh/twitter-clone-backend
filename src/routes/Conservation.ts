@@ -10,6 +10,7 @@ const Conservation = (user: Router) => {
   conservation.get("/", Controllers.GetConservationsController);
   conservation.get("/:id", Controllers.GetConservationController);
   conservation.put("/send/:id", Controllers.SendMessageController);
+  conservation.put("/read/:id/:messageId", Controllers.ReadMessageController);
   // conservation.delete("/:id", Controllers.DeleteConservationController);
 }
 

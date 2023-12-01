@@ -12,6 +12,7 @@ const Conservation = (user) => {
     conservation.get("/", Controllers_1.default.GetConservationsController);
     conservation.get("/:id", Controllers_1.default.GetConservationController);
     conservation.put("/send/:id", Controllers_1.default.SendMessageController);
+    conservation.put("/read/:id/:messageId", Controllers_1.default.ReadMessageController);
     // conservation.delete("/:id", Controllers.DeleteConservationController);
 };
 exports.default = Conservation;
