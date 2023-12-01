@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { ErrorResponse } from "../helpers/ErrorHelper";
 import UserModel from "../models/User";
 import { ConversationModel, MessageModel } from "../models/Conversation";
+import { firestoreDb } from "../config/Firebase";
 
 export const CreateConversationController: RequestHandler = async (
   req,
@@ -50,11 +51,32 @@ export const CreateConversationController: RequestHandler = async (
       members: [user._id, user2._id],
     });
 
-    await user.updateOne({ $push: { conversations: conversation._id } }).exec();
+    await user
+      .updateOne({ $addToSet: { conversations: conversation._id } })
+      .exec();
 
     await user2
-      .updateOne({ $push: { conversations: conversation._id } })
+      .updateOne({ $addToSet: { conversations: conversation._id } })
       .exec();
+
+    const message = await MessageModel.create({
+      conversationId: conversation._id,
+      message: "Conversation started!",
+      sender: user._id,
+      reciever: user2._id,
+    });
+
+    const conversationRef = firestoreDb
+      .collection("conversations")
+      .doc(conversation._id.toString());
+
+    await conversationRef.collection("messages").add({
+      message: "Conversation started!",
+      messageId: message._id.toString(),
+      sender: user._id.toString(),
+      reciever: user2._id.toString(),
+      createdAt: Date.now(),
+    });
 
     res
       .status(200)

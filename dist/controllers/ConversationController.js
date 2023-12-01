@@ -7,6 +7,7 @@ exports.ReadMessageController = exports.SendMessageController = exports.GetConse
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Conversation_1 = require("../models/Conversation");
+const Firebase_1 = require("../config/Firebase");
 const CreateConversationController = async (req, res) => {
     try {
         const email = req.get("email");
@@ -40,10 +41,28 @@ const CreateConversationController = async (req, res) => {
         const conversation = await Conversation_1.ConversationModel.create({
             members: [user._id, user2._id],
         });
-        await user.updateOne({ $push: { conversations: conversation._id } }).exec();
-        await user2
-            .updateOne({ $push: { conversations: conversation._id } })
+        await user
+            .updateOne({ $addToSet: { conversations: conversation._id } })
             .exec();
+        await user2
+            .updateOne({ $addToSet: { conversations: conversation._id } })
+            .exec();
+        const message = await Conversation_1.MessageModel.create({
+            conversationId: conversation._id,
+            message: "Conversation started!",
+            sender: user._id,
+            reciever: user2._id,
+        });
+        const conversationRef = Firebase_1.firestoreDb
+            .collection("conversations")
+            .doc(conversation._id.toString());
+        await conversationRef.collection("messages").add({
+            message: "Conversation started!",
+            messageId: message._id.toString(),
+            sender: user._id.toString(),
+            reciever: user2._id.toString(),
+            createdAt: Date.now(),
+        });
         res
             .status(200)
             .json({ message: "Conversation created successfully!", conversation });
