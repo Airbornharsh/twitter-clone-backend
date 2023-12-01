@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
+exports.SendMessageController = exports.GetConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Conversation_1 = require("../models/Conversation");
@@ -120,3 +120,43 @@ const GetConservationController = async (req, res) => {
     }
 };
 exports.GetConservationController = GetConservationController;
+const SendMessageController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const conversationId = req.params.id;
+        const { message, messageMedia, recieverId } = req.body;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const reciever = await User_1.default.findOne({ _id: recieverId });
+        if (!reciever) {
+            res.status(404).json({ message: "Reciever not found!" });
+            return;
+        }
+        const conversation = await Conversation_1.ConversationModel.findOne({
+            _id: conversationId,
+            members: { $in: [user._id] },
+        });
+        if (!conversation) {
+            res.status(404).json({ message: "Conversation not found!" });
+            return;
+        }
+        const newMessage = await Conversation_1.MessageModel.create({
+            conversationId,
+            message,
+            messageMedia,
+            sender: user._id,
+            reciever: reciever._id,
+        });
+        await conversation.updateOne({
+            $push: { messages: newMessage._id },
+        });
+        res.status(200).json({ message: "Message sent successfully!", newMessage });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.SendMessageController = SendMessageController;

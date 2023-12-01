@@ -138,3 +138,51 @@ export const GetConservationController: RequestHandler = async (req, res) => {
     ErrorResponse(res, 500, e);
   }
 };
+
+export const SendMessageController: RequestHandler = async (req, res) => {
+  try {
+    const email = req.get("email");
+    const conversationId = req.params.id;
+    const { message, messageMedia, recieverId } = req.body;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const reciever = await UserModel.findOne({ _id: recieverId });
+
+    if (!reciever) {
+      res.status(404).json({ message: "Reciever not found!" });
+      return;
+    }
+
+    const conversation = await ConversationModel.findOne({
+      _id: conversationId,
+      members: { $in: [user._id] },
+    });
+
+    if (!conversation) {
+      res.status(404).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    const newMessage = await MessageModel.create({
+      conversationId,
+      message,
+      messageMedia,
+      sender: user._id,
+      reciever: reciever._id,
+    });
+
+    await conversation.updateOne({
+      $push: { messages: newMessage._id },
+    });
+
+    res.status(200).json({ message: "Message sent successfully!", newMessage });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};

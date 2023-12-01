@@ -9,7 +9,7 @@ const Conservation = (user: Router) => {
   conservation.post("/", Controllers.CreateConversationController);
   conservation.get("/", Controllers.GetConservationsController);
   conservation.get("/:id", Controllers.GetConservationController);
-  // conservation.put("/:id", Controllers.UpdateConservationController);
+  conservation.put("/send/:id", Controllers.SendMessageController);
   // conservation.delete("/:id", Controllers.DeleteConservationController);
 }
 

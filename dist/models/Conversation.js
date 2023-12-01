@@ -43,7 +43,7 @@ const MessageModelSchema = new mongoose_2.Schema({
         ref: "Users",
         required: true,
     },
-    recieve: {
+    reciever: {
         type: mongoose_2.Schema.Types.ObjectId,
         ref: "Users",
         required: true,
