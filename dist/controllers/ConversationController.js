@@ -172,6 +172,17 @@ const SendMessageController = async (req, res) => {
         await conversation.updateOne({
             $push: { messages: newMessage._id },
         });
+        const conversationRef = Firebase_1.firestoreDb
+            .collection("conversations")
+            .doc(conversationId);
+        await conversationRef.collection("messages").add({
+            message,
+            messageId: newMessage._id.toString(),
+            sender: user._id.toString(),
+            reciever: reciever._id.toString(),
+            read: false,
+            createdAt: Date.now(),
+        });
         res.status(200).json({ message: "Message sent successfully!", newMessage });
     }
     catch (e) {
