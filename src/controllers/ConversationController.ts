@@ -251,7 +251,7 @@ export const SendMessageController: RequestHandler = async (req, res) => {
       sender: user._id.toString(),
       reciever: reciever._id.toString(),
       read: false,
-      createdAt: Date.now(),
+      createdAt: new Date(newMessage.createdAt).getTime(),
     });
 
     res.status(200).json({ message: "Message sent successfully!", newMessage });
