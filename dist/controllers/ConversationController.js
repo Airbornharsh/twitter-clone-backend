@@ -173,7 +173,6 @@ const SendMessageController = async (req, res) => {
         const email = req.get("email");
         const conversationId = req.params.id;
         const { message, messageMedia, recieverId } = req.body;
-        console.log(recieverId);
         const user = await User_1.default.findOne({ email });
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });

@@ -204,8 +204,6 @@ export const SendMessageController: RequestHandler = async (req, res) => {
     const conversationId = req.params.id;
     const { message, messageMedia, recieverId } = req.body;
 
-    console.log(recieverId);
-
     const user = await UserModel.findOne({ email });
 
     if (!user) {
