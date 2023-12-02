@@ -48,7 +48,7 @@ export const CreateConversationController: RequestHandler = async (
     }
 
     const conversation = await ConversationModel.create({
-      members: [user._id, user2._id],
+      members: [user2._id, user._id],
     });
 
     await user

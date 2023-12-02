@@ -39,7 +39,7 @@ const CreateConversationController = async (req, res) => {
             return;
         }
         const conversation = await Conversation_1.ConversationModel.create({
-            members: [user._id, user2._id],
+            members: [user2._id, user._id],
         });
         await user
             .updateOne({ $addToSet: { conversations: conversation._id } })
