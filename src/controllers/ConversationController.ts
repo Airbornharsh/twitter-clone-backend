@@ -110,6 +110,41 @@ export const GetConservationsController: RequestHandler = async (req, res) => {
   }
 };
 
+export const GetUserConservationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const conversationId = req.params.id;
+
+    const conversation = await ConversationModel.findOne({
+      _id: conversationId,
+      members: { $in: [user._id] },
+    }).populate({
+      path: "members",
+      select: "name userName profileImage",
+    }).select("members createdAt");
+
+    if (!conversation) {
+      res.status(404).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    res.status(200).json({ message: "Conversation found!", conversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const GetConservationController: RequestHandler = async (req, res) => {
   try {
     const email = req.get("email");
