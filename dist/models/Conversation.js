@@ -35,9 +35,11 @@ const MessageModelSchema = new mongoose_2.Schema({
         type: String,
         required: true,
     },
-    messageMedia: {
-        type: String,
-    },
+    messageMedia: [
+        {
+            type: String,
+        },
+    ],
     sender: {
         type: mongoose_2.Schema.Types.ObjectId,
         ref: "Users",

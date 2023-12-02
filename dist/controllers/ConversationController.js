@@ -105,10 +105,12 @@ const GetUserConservationController = async (req, res) => {
         const conversation = await Conversation_1.ConversationModel.findOne({
             _id: conversationId,
             members: { $in: [user._id] },
-        }).populate({
+        })
+            .populate({
             path: "members",
             select: "name userName profileImage",
-        }).select("members createdAt");
+        })
+            .select("members createdAt");
         if (!conversation) {
             res.status(404).json({ message: "Conversation not found!" });
             return;
@@ -171,6 +173,7 @@ const SendMessageController = async (req, res) => {
         const email = req.get("email");
         const conversationId = req.params.id;
         const { message, messageMedia, recieverId } = req.body;
+        console.log(recieverId);
         const user = await User_1.default.findOne({ email });
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });
@@ -204,6 +207,7 @@ const SendMessageController = async (req, res) => {
             .doc(conversationId);
         await conversationRef.collection("messages").add({
             message,
+            messageMedia,
             messageId: newMessage._id.toString(),
             sender: user._id.toString(),
             reciever: reciever._id.toString(),

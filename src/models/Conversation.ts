@@ -34,9 +34,11 @@ const MessageModelSchema = new Schema({
     type: String,
     required: true,
   },
-  messageMedia: {
-    type: String,
-  },
+  messageMedia: [
+    {
+      type: String,
+    },
+  ],
   sender: {
     type: Schema.Types.ObjectId,
     ref: "Users",
