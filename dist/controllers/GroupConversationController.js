@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.RemoveGroupConversationAdminController = exports.AddGroupConversationAdminController = exports.RemoveGroupConversationMemberController = exports.AddGroupConversationMemberController = exports.CreateGroupConversationController = void 0;
+exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AllowGroupConversationController = exports.RemoveGroupConversationAdminController = exports.AddGroupConversationAdminController = exports.RemoveGroupConversationMemberController = exports.AddGroupConversationMemberController = exports.CreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
@@ -340,6 +340,71 @@ const RemoveGroupConversationAdminController = async (req, res) => {
     }
 };
 exports.RemoveGroupConversationAdminController = RemoveGroupConversationAdminController;
+const AllowGroupConversationController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const { id } = req.params;
+        const { userId } = req.body;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        if (!id) {
+            res.status(400).json({ message: "Conversation Id is required!" });
+            return;
+        }
+        if (!userId) {
+            res.status(400).json({ message: "User Id is required!" });
+            return;
+        }
+        const groupConversation = await GroupConversation_1.GroupConversationModel.findOne({
+            _id: id,
+        });
+        if (!groupConversation) {
+            res.status(400).json({ message: "Conversation not found!" });
+            return;
+        }
+        const groupAdmin = groupConversation.groupAdmin;
+        if (!groupAdmin.includes(user._id)) {
+            res.status(400).json({ message: "You are not an admin!" });
+            return;
+        }
+        const requestedMembers = groupConversation.requestedMembers;
+        if (requestedMembers.length < 1) {
+            res.status(400).json({ message: "No requested members!" });
+            return;
+        }
+        if (!requestedMembers.includes(userId)) {
+            res.status(400).json({ message: "User not requested!" });
+            return;
+        }
+        await groupConversation.updateOne({
+            $pull: { requestedMembers: userId },
+            $addToSet: { groupMembers: userId },
+        });
+        await User_1.default.updateOne({ _id: userId }, { $addToSet: { groupConversations: groupConversation._id } });
+        const groupMessage = await GroupConversation_1.GroupConversationMessageModel.create({
+            groupId: groupConversation._id,
+            message: `${user.name} allowed ${userId}`,
+            sender: user._id,
+        });
+        const groupConversationRef = Firebase_1.firestoreDb
+            .collection("groupConversations")
+            .doc(groupConversation._id.toString());
+        await groupConversationRef.collection("groupMessages").add({
+            groupMessageId: groupMessage._id.toString(),
+            groupMessage: groupMessage.message,
+            sender: groupMessage.sender.toString(),
+            createdAt: new Date(groupMessage.createdAt).getTime(),
+        });
+        res.status(200).json({ message: "User allowed!", groupConversation });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.AllowGroupConversationController = AllowGroupConversationController;
 const LeaveGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
