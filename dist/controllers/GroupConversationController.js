@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.DeleteGroupConversationController = exports.DenyGroupConversationController = exports.AllowGroupConversationController = exports.RemoveGroupConversationAdminController = exports.AddGroupConversationAdminController = exports.RemoveGroupConversationMemberController = exports.AddGroupConversationMemberController = exports.UpdateGroupConversationController = exports.CreateGroupConversationController = void 0;
+exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.AdminCreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
 const GroupConversation_1 = require("../models/GroupConversation");
-const CreateGroupConversationController = async (req, res) => {
+const AdminCreateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { groupName, members } = req.body;
@@ -71,8 +71,8 @@ const CreateGroupConversationController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.CreateGroupConversationController = CreateGroupConversationController;
-const UpdateGroupConversationController = async (req, res) => {
+exports.AdminCreateGroupConversationController = AdminCreateGroupConversationController;
+const AdminUpdateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -145,8 +145,8 @@ const UpdateGroupConversationController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.UpdateGroupConversationController = UpdateGroupConversationController;
-const AddGroupConversationMemberController = async (req, res) => {
+exports.AdminUpdateGroupConversationController = AdminUpdateGroupConversationController;
+const AdminAddGroupConversationMemberController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -213,8 +213,8 @@ const AddGroupConversationMemberController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.AddGroupConversationMemberController = AddGroupConversationMemberController;
-const RemoveGroupConversationMemberController = async (req, res) => {
+exports.AdminAddGroupConversationMemberController = AdminAddGroupConversationMemberController;
+const AdminRemoveGroupConversationMemberController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -281,8 +281,8 @@ const RemoveGroupConversationMemberController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.RemoveGroupConversationMemberController = RemoveGroupConversationMemberController;
-const AddGroupConversationAdminController = async (req, res) => {
+exports.AdminRemoveGroupConversationMemberController = AdminRemoveGroupConversationMemberController;
+const AdminAddGroupConversationAdminController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -347,8 +347,8 @@ const AddGroupConversationAdminController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.AddGroupConversationAdminController = AddGroupConversationAdminController;
-const RemoveGroupConversationAdminController = async (req, res) => {
+exports.AdminAddGroupConversationAdminController = AdminAddGroupConversationAdminController;
+const AdminRemoveGroupConversationAdminController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -413,8 +413,8 @@ const RemoveGroupConversationAdminController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.RemoveGroupConversationAdminController = RemoveGroupConversationAdminController;
-const AllowGroupConversationController = async (req, res) => {
+exports.AdminRemoveGroupConversationAdminController = AdminRemoveGroupConversationAdminController;
+const AdminAllowGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -483,8 +483,8 @@ const AllowGroupConversationController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.AllowGroupConversationController = AllowGroupConversationController;
-const DenyGroupConversationController = async (req, res) => {
+exports.AdminAllowGroupConversationController = AdminAllowGroupConversationController;
+const AdminDenyGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -551,8 +551,8 @@ const DenyGroupConversationController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.DenyGroupConversationController = DenyGroupConversationController;
-const DeleteGroupConversationController = async (req, res) => {
+exports.AdminDenyGroupConversationController = AdminDenyGroupConversationController;
+const AdminDeleteGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { id } = req.params;
@@ -592,7 +592,7 @@ const DeleteGroupConversationController = async (req, res) => {
         (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
     }
 };
-exports.DeleteGroupConversationController = DeleteGroupConversationController;
+exports.AdminDeleteGroupConversationController = AdminDeleteGroupConversationController;
 const LeaveGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");

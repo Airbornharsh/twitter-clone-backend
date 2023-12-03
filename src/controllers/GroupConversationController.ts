@@ -7,7 +7,7 @@ import {
   GroupConversationModel,
 } from "../models/GroupConversation";
 
-export const CreateGroupConversationController: RequestHandler = async (
+export const AdminCreateGroupConversationController: RequestHandler = async (
   req,
   res
 ) => {
@@ -92,7 +92,7 @@ export const CreateGroupConversationController: RequestHandler = async (
   }
 };
 
-export const UpdateGroupConversationController: RequestHandler = async (
+export const AdminUpdateGroupConversationController: RequestHandler = async (
   req,
   res
 ) => {
@@ -181,7 +181,7 @@ export const UpdateGroupConversationController: RequestHandler = async (
   }
 };
 
-export const AddGroupConversationMemberController: RequestHandler = async (
+export const AdminAddGroupConversationMemberController: RequestHandler = async (
   req,
   res
 ) => {
@@ -274,7 +274,7 @@ export const AddGroupConversationMemberController: RequestHandler = async (
   }
 };
 
-export const RemoveGroupConversationMemberController: RequestHandler = async (
+export const AdminRemoveGroupConversationMemberController: RequestHandler = async (
   req,
   res
 ) => {
@@ -367,7 +367,7 @@ export const RemoveGroupConversationMemberController: RequestHandler = async (
   }
 };
 
-export const AddGroupConversationAdminController: RequestHandler = async (
+export const AdminAddGroupConversationAdminController: RequestHandler = async (
   req,
   res
 ) => {
@@ -454,7 +454,7 @@ export const AddGroupConversationAdminController: RequestHandler = async (
   }
 };
 
-export const RemoveGroupConversationAdminController: RequestHandler = async (
+export const AdminRemoveGroupConversationAdminController: RequestHandler = async (
   req,
   res
 ) => {
@@ -541,7 +541,7 @@ export const RemoveGroupConversationAdminController: RequestHandler = async (
   }
 };
 
-export const AllowGroupConversationController: RequestHandler = async (
+export const AdminAllowGroupConversationController: RequestHandler = async (
   req,
   res
 ) => {
@@ -635,7 +635,7 @@ export const AllowGroupConversationController: RequestHandler = async (
   }
 };
 
-export const DenyGroupConversationController: RequestHandler = async (
+export const AdminDenyGroupConversationController: RequestHandler = async (
   req,
   res
 ) => {
@@ -723,7 +723,7 @@ export const DenyGroupConversationController: RequestHandler = async (
   }
 };
 
-export const DeleteGroupConversationController: RequestHandler = async (
+export const AdminDeleteGroupConversationController: RequestHandler = async (
   req,
   res
 ) => {

@@ -9,15 +9,16 @@ const GroupConversation = (conversation) => {
     const group = (0, express_1.Router)();
     conversation.use("/group", group);
     //admin
-    group.post("/", Controllers_1.default.CreateGroupConversationController);
-    group.put("/update/:id", Controllers_1.default.UpdateGroupConversationController);
-    group.put("/add/:id", Controllers_1.default.AddGroupConversationMemberController);
-    group.put("/remove/:id", Controllers_1.default.RemoveGroupConversationMemberController);
-    group.put("/admin/:id", Controllers_1.default.AddGroupConversationAdminController);
-    group.delete("/admin/:id", Controllers_1.default.RemoveGroupConversationAdminController);
-    group.patch("/allow/:id", Controllers_1.default.AllowGroupConversationController);
-    group.patch("/deny/:id", Controllers_1.default.DenyGroupConversationController);
-    group.delete("/:id", Controllers_1.default.DeleteGroupConversationController);
+    group.post("/", Controllers_1.default.AdminCreateGroupConversationController);
+    // group.get("/", Controllers.GetGroupConversationController);
+    group.put("/update/:id", Controllers_1.default.AdminUpdateGroupConversationController);
+    group.put("/add/:id", Controllers_1.default.AdminAddGroupConversationMemberController);
+    group.put("/remove/:id", Controllers_1.default.AdminRemoveGroupConversationMemberController);
+    group.put("/admin/:id", Controllers_1.default.AdminAddGroupConversationAdminController);
+    group.delete("/admin/:id", Controllers_1.default.AdminRemoveGroupConversationAdminController);
+    group.patch("/allow/:id", Controllers_1.default.AdminAllowGroupConversationController);
+    group.patch("/deny/:id", Controllers_1.default.AdminDenyGroupConversationController);
+    group.delete("/:id", Controllers_1.default.AdminDeleteGroupConversationController);
     //user
     group.put("/leave/:id", Controllers_1.default.LeaveGroupConversationController);
     group.put("/join/:id", Controllers_1.default.JoinGroupConversationController);

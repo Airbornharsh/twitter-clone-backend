@@ -7,18 +7,22 @@ const GroupConversation = (conversation: Router) => {
   conversation.use("/group", group);
 
   //admin
-  group.post("/", Controllers.CreateGroupConversationController);
-  group.put("/update/:id", Controllers.UpdateGroupConversationController);
-  group.put("/add/:id", Controllers.AddGroupConversationMemberController);
-  group.put("/remove/:id", Controllers.RemoveGroupConversationMemberController);
-  group.put("/admin/:id", Controllers.AddGroupConversationAdminController);
+  group.post("/", Controllers.AdminCreateGroupConversationController);
+  // group.get("/", Controllers.GetGroupConversationController);
+  group.put("/update/:id", Controllers.AdminUpdateGroupConversationController);
+  group.put("/add/:id", Controllers.AdminAddGroupConversationMemberController);
+  group.put(
+    "/remove/:id",
+    Controllers.AdminRemoveGroupConversationMemberController
+  );
+  group.put("/admin/:id", Controllers.AdminAddGroupConversationAdminController);
   group.delete(
     "/admin/:id",
-    Controllers.RemoveGroupConversationAdminController
+    Controllers.AdminRemoveGroupConversationAdminController
   );
-  group.patch("/allow/:id", Controllers.AllowGroupConversationController);
-  group.patch("/deny/:id", Controllers.DenyGroupConversationController);
-  group.delete("/:id", Controllers.DeleteGroupConversationController);
+  group.patch("/allow/:id", Controllers.AdminAllowGroupConversationController);
+  group.patch("/deny/:id", Controllers.AdminDenyGroupConversationController);
+  group.delete("/:id", Controllers.AdminDeleteGroupConversationController);
 
   //user
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);
