@@ -18,6 +18,7 @@ const GroupConversation = (conversation: Router) => {
 
   //user
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);
+  group.put("/join/:id", Controllers.JoinGroupConversationController);
 };
 
 export default GroupConversation;
