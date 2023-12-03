@@ -8,7 +8,7 @@ const GroupConversation = (conversation: Router) => {
 
   //admin
   group.post("/", Controllers.AdminCreateGroupConversationController);
-  // group.get("/", Controllers.GetGroupConversationController);
+  group.get("/", Controllers.GetGroupConversationController);
   group.put("/update/:id", Controllers.AdminUpdateGroupConversationController);
   group.put("/add/:id", Controllers.AdminAddGroupConversationMemberController);
   group.put(
@@ -23,8 +23,6 @@ const GroupConversation = (conversation: Router) => {
   group.patch("/allow/:id", Controllers.AdminAllowGroupConversationController);
   group.patch("/deny/:id", Controllers.AdminDenyGroupConversationController);
   group.delete("/:id", Controllers.AdminDeleteGroupConversationController);
-
-  //user
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);
   group.put("/join/:id", Controllers.JoinGroupConversationController);
 };

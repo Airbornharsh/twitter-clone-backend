@@ -92,6 +92,35 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
   }
 };
 
+export const GetGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+
+    const user = await UserModel.findOne({ email });
+    
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    const groupConversations = await GroupConversationModel.find({
+      groupMembers: user._id,
+    });
+
+    if (!groupConversations) {
+      res.status(400).json({ message: "No group conversations found!" });
+      return;
+    }
+
+    res.status(200).json({ groupConversations });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const AdminUpdateGroupConversationController: RequestHandler = async (
   req,
   res
@@ -274,98 +303,96 @@ export const AdminAddGroupConversationMemberController: RequestHandler = async (
   }
 };
 
-export const AdminRemoveGroupConversationMemberController: RequestHandler = async (
-  req,
-  res
-) => {
-  try {
-    const email = req.get("email");
-    const { id } = req.params;
-    const { members } = req.body;
+export const AdminRemoveGroupConversationMemberController: RequestHandler =
+  async (req, res) => {
+    try {
+      const email = req.get("email");
+      const { id } = req.params;
+      const { members } = req.body;
 
-    const user = await UserModel.findOne({ email });
+      const user = await UserModel.findOne({ email });
 
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
+      if (!user) {
+        res.status(401).json({ message: "User not allowed!" });
+        return;
+      }
+
+      if (!id) {
+        res.status(400).json({ message: "Conversation Id is required!" });
+        return;
+      }
+
+      if (!members) {
+        res.status(400).json({ message: "Members is required!" });
+        return;
+      }
+
+      const groupConversation = await GroupConversationModel.findOne({
+        _id: id,
+      });
+
+      if (!groupConversation) {
+        res.status(400).json({ message: "Conversation not found!" });
+        return;
+      }
+
+      const membersExist = await UserModel.find({ _id: { $in: members } });
+
+      if (!membersExist) {
+        res.status(400).json({ message: "Members not found!" });
+        return;
+      }
+
+      if (members.length < 1) {
+        res.status(400).json({ message: "Members must be more than 1!" });
+        return;
+      }
+
+      if (members.length > 100) {
+        res.status(400).json({ message: "Members must be less than 100!" });
+        return;
+      }
+
+      const groupAdmin = groupConversation.groupAdmin;
+
+      if (!groupAdmin.includes(user._id)) {
+        res.status(400).json({ message: "You are not an admin!" });
+        return;
+      }
+
+      await groupConversation.updateOne({
+        $pull: { groupMembers: { $in: members } },
+      });
+
+      await UserModel.updateMany(
+        { _id: { $in: members } },
+        { $pull: { groupConversations: groupConversation._id } }
+      );
+
+      const groupMessage = await GroupConversationMessageModel.create({
+        groupId: groupConversation._id,
+        message: `${user.name} removed ${members.length} member${
+          members.length > 1 ? "s" : ""
+        }`,
+        sender: user._id,
+      });
+
+      const groupConversationRef = firestoreDb
+        .collection("groupConversations")
+        .doc(groupConversation._id.toString());
+
+      await groupConversationRef.collection("groupMessages").add({
+        groupMessageId: groupMessage._id.toString(),
+        groupMessage: groupMessage.message,
+        sender: groupMessage.sender.toString(),
+        createdAt: new Date(groupMessage.createdAt).getTime(),
+      });
+
+      res.status(200).json({ message: "Members removed!", groupConversation });
+    } catch (e) {
+      ErrorResponse(res, 500, e);
     }
-
-    if (!id) {
-      res.status(400).json({ message: "Conversation Id is required!" });
-      return;
-    }
-
-    if (!members) {
-      res.status(400).json({ message: "Members is required!" });
-      return;
-    }
-
-    const groupConversation = await GroupConversationModel.findOne({
-      _id: id,
-    });
-
-    if (!groupConversation) {
-      res.status(400).json({ message: "Conversation not found!" });
-      return;
-    }
-
-    const membersExist = await UserModel.find({ _id: { $in: members } });
-
-    if (!membersExist) {
-      res.status(400).json({ message: "Members not found!" });
-      return;
-    }
-
-    if (members.length < 1) {
-      res.status(400).json({ message: "Members must be more than 1!" });
-      return;
-    }
-
-    if (members.length > 100) {
-      res.status(400).json({ message: "Members must be less than 100!" });
-      return;
-    }
-
-    const groupAdmin = groupConversation.groupAdmin;
-
-    if (!groupAdmin.includes(user._id)) {
-      res.status(400).json({ message: "You are not an admin!" });
-      return;
-    }
-
-    await groupConversation.updateOne({
-      $pull: { groupMembers: { $in: members } },
-    });
-
-    await UserModel.updateMany(
-      { _id: { $in: members } },
-      { $pull: { groupConversations: groupConversation._id } }
-    );
-
-    const groupMessage = await GroupConversationMessageModel.create({
-      groupId: groupConversation._id,
-      message: `${user.name} removed ${members.length} member${
-        members.length > 1 ? "s" : ""
-      }`,
-      sender: user._id,
-    });
-
-    const groupConversationRef = firestoreDb
-      .collection("groupConversations")
-      .doc(groupConversation._id.toString());
-
-    await groupConversationRef.collection("groupMessages").add({
-      groupMessageId: groupMessage._id.toString(),
-      groupMessage: groupMessage.message,
-      sender: groupMessage.sender.toString(),
-      createdAt: new Date(groupMessage.createdAt).getTime(),
-    });
-
-    res.status(200).json({ message: "Members removed!", groupConversation });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+  };
 
 export const AdminAddGroupConversationAdminController: RequestHandler = async (
   req,
@@ -454,92 +481,90 @@ export const AdminAddGroupConversationAdminController: RequestHandler = async (
   }
 };
 
-export const AdminRemoveGroupConversationAdminController: RequestHandler = async (
-  req,
-  res
-) => {
-  try {
-    const email = req.get("email");
-    const { id } = req.params;
-    const { members } = req.body;
+export const AdminRemoveGroupConversationAdminController: RequestHandler =
+  async (req, res) => {
+    try {
+      const email = req.get("email");
+      const { id } = req.params;
+      const { members } = req.body;
 
-    const user = await UserModel.findOne({ email });
+      const user = await UserModel.findOne({ email });
 
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
+      if (!user) {
+        res.status(401).json({ message: "User not allowed!" });
+        return;
+      }
+
+      if (!id) {
+        res.status(400).json({ message: "Conversation Id is required!" });
+        return;
+      }
+
+      if (!members) {
+        res.status(400).json({ message: "Members is required!" });
+        return;
+      }
+
+      const groupConversation = await GroupConversationModel.findOne({
+        _id: id,
+      });
+
+      if (!groupConversation) {
+        res.status(400).json({ message: "Conversation not found!" });
+        return;
+      }
+
+      const membersExist = await UserModel.find({ _id: { $in: members } });
+
+      if (!membersExist) {
+        res.status(400).json({ message: "Members not found!" });
+        return;
+      }
+
+      if (members.length < 1) {
+        res.status(400).json({ message: "Members must be more than 1!" });
+        return;
+      }
+
+      if (members.length > 100) {
+        res.status(400).json({ message: "Members must be less than 100!" });
+        return;
+      }
+
+      const groupAdmin = groupConversation.groupAdmin;
+
+      if (!groupAdmin.includes(user._id)) {
+        res.status(400).json({ message: "You are not an admin!" });
+        return;
+      }
+
+      await groupConversation.updateOne({
+        $pull: { groupAdmin: { $in: members } },
+      });
+
+      const groupMessage = await GroupConversationMessageModel.create({
+        groupId: groupConversation._id,
+        message: `${user.name} removed ${members.length} admin${
+          members.length > 1 ? "s" : ""
+        }`,
+        sender: user._id,
+      });
+
+      const groupConversationRef = firestoreDb
+        .collection("groupConversations")
+        .doc(groupConversation._id.toString());
+
+      await groupConversationRef.collection("groupMessages").add({
+        groupMessageId: groupMessage._id.toString(),
+        groupMessage: groupMessage.message,
+        sender: groupMessage.sender.toString(),
+      });
+
+      res.status(200).json({ message: "Admin removed!", groupConversation });
+    } catch (e) {
+      ErrorResponse(res, 500, e);
     }
-
-    if (!id) {
-      res.status(400).json({ message: "Conversation Id is required!" });
-      return;
-    }
-
-    if (!members) {
-      res.status(400).json({ message: "Members is required!" });
-      return;
-    }
-
-    const groupConversation = await GroupConversationModel.findOne({
-      _id: id,
-    });
-
-    if (!groupConversation) {
-      res.status(400).json({ message: "Conversation not found!" });
-      return;
-    }
-
-    const membersExist = await UserModel.find({ _id: { $in: members } });
-
-    if (!membersExist) {
-      res.status(400).json({ message: "Members not found!" });
-      return;
-    }
-
-    if (members.length < 1) {
-      res.status(400).json({ message: "Members must be more than 1!" });
-      return;
-    }
-
-    if (members.length > 100) {
-      res.status(400).json({ message: "Members must be less than 100!" });
-      return;
-    }
-
-    const groupAdmin = groupConversation.groupAdmin;
-
-    if (!groupAdmin.includes(user._id)) {
-      res.status(400).json({ message: "You are not an admin!" });
-      return;
-    }
-
-    await groupConversation.updateOne({
-      $pull: { groupAdmin: { $in: members } },
-    });
-
-    const groupMessage = await GroupConversationMessageModel.create({
-      groupId: groupConversation._id,
-      message: `${user.name} removed ${members.length} admin${
-        members.length > 1 ? "s" : ""
-      }`,
-      sender: user._id,
-    });
-
-    const groupConversationRef = firestoreDb
-      .collection("groupConversations")
-      .doc(groupConversation._id.toString());
-
-    await groupConversationRef.collection("groupMessages").add({
-      groupMessageId: groupMessage._id.toString(),
-      groupMessage: groupMessage.message,
-      sender: groupMessage.sender.toString(),
-    });
-
-    res.status(200).json({ message: "Admin removed!", groupConversation });
-  } catch (e) {
-    ErrorResponse(res, 500, e);
-  }
-};
+  };
 
 export const AdminAllowGroupConversationController: RequestHandler = async (
   req,

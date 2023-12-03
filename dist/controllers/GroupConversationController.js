@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.AdminCreateGroupConversationController = void 0;
+exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.GetGroupConversationController = exports.AdminCreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
@@ -72,6 +72,28 @@ const AdminCreateGroupConversationController = async (req, res) => {
     }
 };
 exports.AdminCreateGroupConversationController = AdminCreateGroupConversationController;
+const GetGroupConversationController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        const groupConversations = await GroupConversation_1.GroupConversationModel.find({
+            groupMembers: user._id,
+        });
+        if (!groupConversations) {
+            res.status(400).json({ message: "No group conversations found!" });
+            return;
+        }
+        res.status(200).json({ groupConversations });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetGroupConversationController = GetGroupConversationController;
 const AdminUpdateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");

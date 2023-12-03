@@ -9,6 +9,7 @@ const GroupConversation_1 = __importDefault(require("./GroupConversation"));
 const Conservation = (user) => {
     const conservation = (0, express_1.Router)();
     user.use("/conversation", conservation);
+    (0, GroupConversation_1.default)(conservation);
     conservation.post("/", Controllers_1.default.CreateConversationController);
     conservation.get("/", Controllers_1.default.GetConservationsController);
     conservation.get("/:id", Controllers_1.default.GetConservationController);
@@ -16,6 +17,5 @@ const Conservation = (user) => {
     conservation.put("/send/:id", Controllers_1.default.SendMessageController);
     conservation.put("/read/:id/:messageId", Controllers_1.default.ReadMessageController);
     // conservation.delete("/:id", Controllers.DeleteConservationController);
-    (0, GroupConversation_1.default)(conservation);
 };
 exports.default = Conservation;

@@ -6,6 +6,8 @@ const Conservation = (user: Router) => {
   const conservation = Router();
 
   user.use("/conversation", conservation);
+  
+  GroupConversation(conservation);
 
   conservation.post("/", Controllers.CreateConversationController);
   conservation.get("/", Controllers.GetConservationsController);
@@ -14,8 +16,6 @@ const Conservation = (user: Router) => {
   conservation.put("/send/:id", Controllers.SendMessageController);
   conservation.put("/read/:id/:messageId", Controllers.ReadMessageController);
   // conservation.delete("/:id", Controllers.DeleteConservationController);
-
-  GroupConversation(conservation);
 };
 
 export default Conservation;

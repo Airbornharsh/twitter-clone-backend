@@ -10,7 +10,7 @@ const GroupConversation = (conversation) => {
     conversation.use("/group", group);
     //admin
     group.post("/", Controllers_1.default.AdminCreateGroupConversationController);
-    // group.get("/", Controllers.GetGroupConversationController);
+    group.get("/", Controllers_1.default.GetGroupConversationController);
     group.put("/update/:id", Controllers_1.default.AdminUpdateGroupConversationController);
     group.put("/add/:id", Controllers_1.default.AdminAddGroupConversationMemberController);
     group.put("/remove/:id", Controllers_1.default.AdminRemoveGroupConversationMemberController);
@@ -19,7 +19,6 @@ const GroupConversation = (conversation) => {
     group.patch("/allow/:id", Controllers_1.default.AdminAllowGroupConversationController);
     group.patch("/deny/:id", Controllers_1.default.AdminDenyGroupConversationController);
     group.delete("/:id", Controllers_1.default.AdminDeleteGroupConversationController);
-    //user
     group.put("/leave/:id", Controllers_1.default.LeaveGroupConversationController);
     group.put("/join/:id", Controllers_1.default.JoinGroupConversationController);
 };
