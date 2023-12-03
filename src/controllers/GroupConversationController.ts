@@ -122,6 +122,31 @@ export const GetGroupConversationsController: RequestHandler = async (
   }
 };
 
+export const SearchGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const name = req.params.name ? req.params.name : "";
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed" });
+      return;
+    }
+
+    const groupConversations = await GroupConversationModel.find({
+      groupName: { $regex: name, $options: "i" },
+    });
+
+    res.status(200).json({ groupConversations });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const GetGroupConversationController: RequestHandler = async (
   req,
   res
