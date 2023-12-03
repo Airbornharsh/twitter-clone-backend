@@ -17,6 +17,7 @@ const GroupConversation = (conversation: Router) => {
   );
   group.patch("/allow/:id", Controllers.AllowGroupConversationController);
   group.patch("/deny/:id", Controllers.DenyGroupConversationController);
+  group.delete("/:id", Controllers.DeleteGroupConversationController);
 
   //user
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);

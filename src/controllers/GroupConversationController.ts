@@ -634,6 +634,65 @@ export const DenyGroupConversationController: RequestHandler = async (
   }
 };
 
+export const DeleteGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { id } = req.params;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+    });
+
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    const groupAdmin = groupConversation.groupAdmin;
+
+    if (!groupAdmin.includes(user._id)) {
+      res.status(400).json({ message: "You are not an admin!" });
+      return;
+    }
+
+    await UserModel.updateMany(
+      { _id: { $in: groupConversation.groupMembers } },
+      { $pull: { groupConversations: groupConversation._id } }
+    );
+
+    await groupConversation.deleteOne();
+
+    await GroupConversationMessageModel.deleteMany({
+      groupId: groupConversation._id,
+    });
+
+    const groupConversationRef = firestoreDb
+      .collection("groupConversations")
+      .doc(groupConversation._id.toString());
+
+    await groupConversationRef.delete();
+
+    res.status(200).json({ message: "Group deleted!" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const LeaveGroupConversationController: RequestHandler = async (
   req,
   res

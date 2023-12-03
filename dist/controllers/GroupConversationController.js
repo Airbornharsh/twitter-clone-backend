@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.DenyGroupConversationController = exports.AllowGroupConversationController = exports.RemoveGroupConversationAdminController = exports.AddGroupConversationAdminController = exports.RemoveGroupConversationMemberController = exports.AddGroupConversationMemberController = exports.CreateGroupConversationController = void 0;
+exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.DeleteGroupConversationController = exports.DenyGroupConversationController = exports.AllowGroupConversationController = exports.RemoveGroupConversationAdminController = exports.AddGroupConversationAdminController = exports.RemoveGroupConversationMemberController = exports.AddGroupConversationMemberController = exports.CreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
@@ -478,6 +478,47 @@ const DenyGroupConversationController = async (req, res) => {
     }
 };
 exports.DenyGroupConversationController = DenyGroupConversationController;
+const DeleteGroupConversationController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const { id } = req.params;
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed!" });
+            return;
+        }
+        if (!id) {
+            res.status(400).json({ message: "Conversation Id is required!" });
+            return;
+        }
+        const groupConversation = await GroupConversation_1.GroupConversationModel.findOne({
+            _id: id,
+        });
+        if (!groupConversation) {
+            res.status(400).json({ message: "Conversation not found!" });
+            return;
+        }
+        const groupAdmin = groupConversation.groupAdmin;
+        if (!groupAdmin.includes(user._id)) {
+            res.status(400).json({ message: "You are not an admin!" });
+            return;
+        }
+        await User_1.default.updateMany({ _id: { $in: groupConversation.groupMembers } }, { $pull: { groupConversations: groupConversation._id } });
+        await groupConversation.deleteOne();
+        await GroupConversation_1.GroupConversationMessageModel.deleteMany({
+            groupId: groupConversation._id,
+        });
+        const groupConversationRef = Firebase_1.firestoreDb
+            .collection("groupConversations")
+            .doc(groupConversation._id.toString());
+        await groupConversationRef.delete();
+        res.status(200).json({ message: "Group deleted!" });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.DeleteGroupConversationController = DeleteGroupConversationController;
 const LeaveGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
