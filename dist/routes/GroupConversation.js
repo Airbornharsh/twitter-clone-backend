@@ -15,6 +15,7 @@ const GroupConversation = (conversation) => {
     group.put("/admin/:id", Controllers_1.default.AddGroupConversationAdminController);
     group.delete("/admin/:id", Controllers_1.default.RemoveGroupConversationAdminController);
     group.patch("/allow/:id", Controllers_1.default.AllowGroupConversationController);
+    group.patch("/deny/:id", Controllers_1.default.DenyGroupConversationController);
     //user
     group.put("/leave/:id", Controllers_1.default.LeaveGroupConversationController);
     group.put("/join/:id", Controllers_1.default.JoinGroupConversationController);

@@ -478,6 +478,13 @@ export const AllowGroupConversationController: RequestHandler = async (
       return;
     }
 
+    const otherUser = await UserModel.findOne({ _id: userId });
+
+    if (!otherUser) {
+      res.status(400).json({ message: "User not found!" });
+      return;
+    }
+
     const groupConversation = await GroupConversationModel.findOne({
       _id: id,
     });
@@ -518,7 +525,7 @@ export const AllowGroupConversationController: RequestHandler = async (
 
     const groupMessage = await GroupConversationMessageModel.create({
       groupId: groupConversation._id,
-      message: `${user.name} allowed ${userId}`,
+      message: `${user.name} allowed ${otherUser.name}`,
       sender: user._id,
     });
 
@@ -534,6 +541,94 @@ export const AllowGroupConversationController: RequestHandler = async (
     });
 
     res.status(200).json({ message: "User allowed!", groupConversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const DenyGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({ message: "User Id is required!" });
+      return;
+    }
+
+    const otherUser = await UserModel.findOne({ _id: userId });
+
+    if (!otherUser) {
+      res.status(400).json({ message: "User not found!" });
+      return;
+    }
+
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+    });
+
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    const groupAdmin = groupConversation.groupAdmin;
+
+    if (!groupAdmin.includes(user._id)) {
+      res.status(400).json({ message: "You are not an admin!" });
+      return;
+    }
+
+    const requestedMembers = groupConversation.requestedMembers;
+
+    if (requestedMembers.length < 1) {
+      res.status(400).json({ message: "No requested members!" });
+      return;
+    }
+
+    if (!requestedMembers.includes(userId)) {
+      res.status(400).json({ message: "User not requested!" });
+      return;
+    }
+
+    await groupConversation.updateOne({
+      $pull: { requestedMembers: userId },
+    });
+
+    const groupMessage = await GroupConversationMessageModel.create({
+      groupId: groupConversation._id,
+      message: `${user.name} denied ${otherUser.name}`,
+      sender: user._id,
+    });
+
+    const groupConversationRef = firestoreDb
+      .collection("groupConversations")
+      .doc(groupConversation._id.toString());
+
+    await groupConversationRef.collection("groupMessages").add({
+      groupMessageId: groupMessage._id.toString(),
+      groupMessage: groupMessage.message,
+      sender: groupMessage.sender.toString(),
+      createdAt: new Date(groupMessage.createdAt).getTime(),
+    });
+
+    res.status(200).json({ message: "User denied!", groupConversation });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
