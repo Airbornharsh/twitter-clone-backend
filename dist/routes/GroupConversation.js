@@ -10,6 +10,7 @@ const GroupConversation = (conversation) => {
     conversation.use("/group", group);
     //admin
     group.post("/", Controllers_1.default.CreateGroupConversationController);
+    group.put("/update/:id", Controllers_1.default.UpdateGroupConversationController);
     group.put("/add/:id", Controllers_1.default.AddGroupConversationMemberController);
     group.put("/remove/:id", Controllers_1.default.RemoveGroupConversationMemberController);
     group.put("/admin/:id", Controllers_1.default.AddGroupConversationAdminController);

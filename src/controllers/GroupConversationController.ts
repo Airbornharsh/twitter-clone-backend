@@ -13,7 +13,7 @@ export const CreateGroupConversationController: RequestHandler = async (
 ) => {
   try {
     const email = req.get("email");
-    const { name, members } = req.body;
+    const { groupName, members } = req.body;
 
     const user = await UserModel.findOne({ email });
 
@@ -22,8 +22,8 @@ export const CreateGroupConversationController: RequestHandler = async (
       return;
     }
 
-    if (!name) {
-      res.status(400).json({ message: "Name is required!" });
+    if (!groupName) {
+      res.status(400).json({ message: "Group Name is required!" });
       return;
     }
 
@@ -55,7 +55,7 @@ export const CreateGroupConversationController: RequestHandler = async (
     }
 
     const groupConversation = await GroupConversationModel.create({
-      groupName: name,
+      groupName: groupName,
       groupAdmin: [user._id],
       groupMembers: [...members, user._id],
     });
@@ -87,6 +87,95 @@ export const CreateGroupConversationController: RequestHandler = async (
     });
 
     res.status(200).json({ message: "Group created!", groupConversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const UpdateGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { id } = req.params;
+    const groupName = req.body.groupName ? req.body.groupName : "";
+    const groupDescription = req.body.groupDescription
+      ? req.body.groupDescription
+      : "";
+    const groupImage = req.body.groupImage ? req.body.groupImage : "";
+
+    const groupData = {};
+
+    Object.assign(groupData, groupName ? { groupName } : {});
+    Object.assign(groupData, groupDescription ? { groupDescription } : {});
+    Object.assign(groupData, groupImage ? { groupImage } : {});
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+    });
+
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+    const groupAdmin = groupConversation.groupAdmin;
+
+    if (!groupAdmin.includes(user._id)) {
+      res.status(400).json({ message: "You are not an admin!" });
+      return;
+    }
+    await groupConversation.updateOne(groupData);
+
+    let customMessage = `${user.name} changed the group`;
+    let check = false;
+
+    if (groupName) {
+      customMessage += ` name to ${groupName}`;
+      check = true;
+    }
+    if (groupDescription) {
+      if (check) {
+        customMessage += ",";
+      }
+      customMessage += ` description to ${groupDescription}`;
+    }
+    if (groupImage) {
+      if (check) {
+        customMessage += ",";
+      }
+      customMessage += ` image`;
+    }
+
+    const groupMessage = await GroupConversationMessageModel.create({
+      groupId: groupConversation._id,
+      message: customMessage,
+      sender: user._id,
+    });
+
+    const groupConversationRef = firestoreDb
+      .collection("groupConversations")
+      .doc(groupConversation._id.toString());
+
+    await groupConversationRef.collection("groupMessages").add({
+      groupMessageId: groupMessage._id.toString(),
+      groupMessage: groupMessage.message,
+      sender: groupMessage.sender.toString(),
+      createdAt: new Date(groupMessage.createdAt).getTime(),
+    });
+
+    res.status(200).json({ message: "Group updated!", groupConversation });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
