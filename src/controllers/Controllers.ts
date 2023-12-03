@@ -5,6 +5,7 @@ import * as tweetController from "./TweetController";
 import * as otherTweetController from "./OtherTweetController";
 import * as notificationController from "./NotificationController";
 import * as ConversationController from "./ConversationController";
+import * as GroupController from "./GroupController";
 
 export default {
   ...userController,
@@ -14,4 +15,5 @@ export default {
   ...otherTweetController,
   ...notificationController,
   ...ConversationController,
+  ...GroupController,
 };
