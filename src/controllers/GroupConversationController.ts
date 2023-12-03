@@ -6,6 +6,7 @@ import {
   GroupConversationMessageModel,
   GroupConversationModel,
 } from "../models/GroupConversation";
+import firebase from "firebase/compat/app";
 
 export const AdminCreateGroupConversationController: RequestHandler = async (
   req,
@@ -225,15 +226,96 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
       groupMessageId: groupMessage._id.toString(),
       groupMessage: groupMessage.message,
       messageMedia: groupMessage.messageMedia as string[],
+      readBy: [] as string[],
       sender: groupMessage.sender.toString(),
       createdAt: new Date(groupMessage.createdAt).getTime(),
     });
 
-    res.status(200).json({ message: "Message sent!", groupConversation });
+    res.status(200).json({ message: "Message sent!", groupMessage });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }
 };
+
+// export const ReadGroupMessageController: RequestHandler = async (req, res) => {
+//   try {
+//     const email = req.get("email");
+//     const { id } = req.params;
+//     const { messageId } = req.body;
+
+//     const user = await UserModel.findOne({ email });
+
+//     if (!user) {
+//       res.status(401).json({ message: "User not allowed!" });
+//       return;
+//     }
+
+//     if (!id) {
+//       res.status(400).json({ message: "Conversation Id is required!" });
+//       return;
+//     }
+
+//     if (!messageId) {
+//       res.status(400).json({ message: "Message Id is required!" });
+//       return;
+//     }
+
+//     const groupConversation = await GroupConversationModel.findOne({
+//       _id: id,
+//       groupMembers: user._id,
+//     });
+
+//     if (!groupConversation) {
+//       res.status(400).json({ message: "Conversation not found!" });
+//       return;
+//     }
+
+//     if (!groupConversation.groupMembers.includes(user._id)) {
+//       res.status(400).json({ message: "You are not a member!" });
+//       return;
+//     }
+
+//     const groupMessage = await GroupConversationMessageModel.findOne({
+//       _id: messageId,
+//       groupId: id,
+//     });
+
+//     if (!groupMessage) {
+//       res.status(400).json({ message: "Message not found!" });
+//       return;
+//     }
+
+//     if (groupMessage.sender.toString() === user._id.toString()) {
+//       res.status(400).json({ message: "You are the sender!" });
+//       return;
+//     }
+
+//     if (groupMessage.readBy.includes(user._id)) {
+//       res.status(400).json({ message: "Message already read!" });
+//       return;
+//     }
+
+//     await groupMessage.updateOne({
+//       $addToSet: { readBy: user._id },
+//     });
+
+//     const groupConversationRef = firestoreDb
+//       .collection("groupConversations")
+//       .doc(groupConversation._id.toString());
+
+//     const groupMessageRef = groupConversationRef
+//       .collection("groupMessages")
+//       .doc(messageId);
+
+//     await groupMessageRef.update({
+//       readBy: [...groupMessage.readBy, user._id.toString()],
+//     });
+
+//     res.status(200).json({ message: "Message read!" });
+//   } catch (e) {
+//     ErrorResponse(res, 500, e);
+//   }
+// };
 
 export const AdminUpdateGroupConversationController: RequestHandler = async (
   req,

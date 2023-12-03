@@ -27,6 +27,7 @@ const GroupConversation = (conversation: Router) => {
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);
   group.put("/join/:id", Controllers.JoinGroupConversationController);
   group.post("/message/:id", Controllers.SendMessageToGroupConversationController);
+  // group.patch("/read/:id", Controllers.ReadGroupMessageController);
 };
 
 export default GroupConversation;
