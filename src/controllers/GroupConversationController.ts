@@ -121,6 +121,53 @@ export const GetGroupConversationsController: RequestHandler = async (
   }
 };
 
+export const GetGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { id } = req.params;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed!" });
+      return;
+    }
+
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+      groupMembers: user._id,
+    })
+      .select(
+        "groupName groupDescription groupImage groupAdmin groupMembers createdAt"
+      )
+      .populate({
+        path: "groupAdmin",
+        select: "name userName profileImage",
+      })
+      .populate({
+        path: "groupMembers",
+        select: "name userName profileImage",
+      });
+
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    res.status(200).json({ groupConversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const AdminUpdateGroupConversationController: RequestHandler = async (
   req,
   res

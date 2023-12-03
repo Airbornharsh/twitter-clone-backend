@@ -11,6 +11,7 @@ const GroupConversation = (conversation) => {
     //admin
     group.post("/", Controllers_1.default.AdminCreateGroupConversationController);
     group.get("/", Controllers_1.default.GetGroupConversationsController);
+    group.get("/:id", Controllers_1.default.GetGroupConversationController);
     group.put("/update/:id", Controllers_1.default.AdminUpdateGroupConversationController);
     group.put("/add/:id", Controllers_1.default.AdminAddGroupConversationMemberController);
     group.put("/remove/:id", Controllers_1.default.AdminRemoveGroupConversationMemberController);
