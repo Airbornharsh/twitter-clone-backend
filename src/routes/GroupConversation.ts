@@ -8,7 +8,7 @@ const GroupConversation = (conversation: Router) => {
 
   //admin
   group.post("/", Controllers.AdminCreateGroupConversationController);
-  group.get("/", Controllers.GetGroupConversationController);
+  group.get("/", Controllers.GetGroupConversationsController);
   group.put("/update/:id", Controllers.AdminUpdateGroupConversationController);
   group.put("/add/:id", Controllers.AdminAddGroupConversationMemberController);
   group.put(

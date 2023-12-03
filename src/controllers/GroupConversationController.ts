@@ -92,7 +92,7 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
   }
 };
 
-export const GetGroupConversationController: RequestHandler = async (
+export const GetGroupConversationsController: RequestHandler = async (
   req,
   res
 ) => {
@@ -100,7 +100,7 @@ export const GetGroupConversationController: RequestHandler = async (
     const email = req.get("email");
 
     const user = await UserModel.findOne({ email });
-    
+
     if (!user) {
       res.status(401).json({ message: "User not allowed!" });
       return;
