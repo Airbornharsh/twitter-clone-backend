@@ -6,7 +6,9 @@ const GroupConversation = (conversation: Router) => {
 
   conversation.use("/group", group);
 
+  //admin
   group.post("/", Controllers.CreateGroupConversationController);
+  group.put("/add/:id", Controllers.AddGroupConversationMemberController);
 };
 
 export default GroupConversation;
