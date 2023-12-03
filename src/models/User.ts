@@ -153,6 +153,13 @@ const Users = new Schema({
       default: [],
     },
   ],
+  groupConversations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "GroupConversations",
+      default: [],
+    },
+  ],
   createdAt: {
     type: Date,
     required: false,

@@ -154,6 +154,13 @@ const Users = new mongoose_1.Schema({
             default: [],
         },
     ],
+    groupConversations: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "GroupConversations",
+            default: [],
+        },
+    ],
     createdAt: {
         type: Date,
         required: false,

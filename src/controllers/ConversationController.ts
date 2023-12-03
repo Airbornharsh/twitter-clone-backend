@@ -75,7 +75,7 @@ export const CreateConversationController: RequestHandler = async (
       messageId: message._id.toString(),
       sender: user._id.toString(),
       reciever: user2._id.toString(),
-      createdAt: Date.now(),
+      createdAt: new Date(message.createdAt).getTime(),
     });
 
     res

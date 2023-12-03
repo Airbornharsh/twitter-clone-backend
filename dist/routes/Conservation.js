@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Controllers_1 = __importDefault(require("../controllers/Controllers"));
-const Group_1 = __importDefault(require("./Group"));
+const GroupConversation_1 = __importDefault(require("./GroupConversation"));
 const Conservation = (user) => {
     const conservation = (0, express_1.Router)();
     user.use("/conversation", conservation);
@@ -16,6 +16,6 @@ const Conservation = (user) => {
     conservation.put("/send/:id", Controllers_1.default.SendMessageController);
     conservation.put("/read/:id/:messageId", Controllers_1.default.ReadMessageController);
     // conservation.delete("/:id", Controllers.DeleteConservationController);
-    (0, Group_1.default)(conservation);
+    (0, GroupConversation_1.default)(conservation);
 };
 exports.default = Conservation;

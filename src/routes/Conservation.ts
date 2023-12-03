@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Controllers from "../controllers/Controllers";
-import Group from "./Group";
+import GroupConversation from "./GroupConversation";
 
 const Conservation = (user: Router) => {
   const conservation = Router();
@@ -15,7 +15,7 @@ const Conservation = (user: Router) => {
   conservation.put("/read/:id/:messageId", Controllers.ReadMessageController);
   // conservation.delete("/:id", Controllers.DeleteConservationController);
 
-  Group(conservation);
+  GroupConversation(conservation);
 };
 
 export default Conservation;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const GroupSchema = new mongoose.Schema({
+const GroupConversationSchema = new mongoose.Schema({
   groupName: {
     type: String,
     required: true,
@@ -40,21 +40,27 @@ const GroupSchema = new mongoose.Schema({
   },
 });
 
-const GroupModel = mongoose.model("Groups", GroupSchema);
+const GroupConversationModel = mongoose.model(
+  "GroupConversations",
+  GroupConversationSchema
+);
 
-const GroupMessageSchema = new mongoose.Schema({
+const GroupConversationMessageSchema = new mongoose.Schema({
   groupId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Groups",
+    ref: "GroupConversations",
     required: true,
   },
   message: {
     type: String,
     required: true,
   },
-  messageMedia: {
-    type: String,
-  },
+  messageMedia: [
+    {
+      type: String,
+      default: [],
+    },
+  ],
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
@@ -72,6 +78,9 @@ const GroupMessageSchema = new mongoose.Schema({
   },
 });
 
-const GroupMessageModel = mongoose.model("GroupMessages", GroupMessageSchema);
+const GroupConversationMessageModel = mongoose.model(
+  "GroupConversationMessages",
+  GroupConversationMessageSchema
+);
 
-export { GroupModel, GroupMessageModel };
+export { GroupConversationModel, GroupConversationMessageModel };
