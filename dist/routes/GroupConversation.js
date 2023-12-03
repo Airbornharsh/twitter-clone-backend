@@ -12,6 +12,7 @@ const GroupConversation = (conversation) => {
     group.post("/", Controllers_1.default.CreateGroupConversationController);
     group.put("/add/:id", Controllers_1.default.AddGroupConversationMemberController);
     group.put("/remove/:id", Controllers_1.default.RemoveGroupConversationMemberController);
+    group.put("/admin/:id", Controllers_1.default.AddGroupConversationAdminController);
     //user
     group.put("/leave/:id", Controllers_1.default.LeaveGroupConversationController);
 };
