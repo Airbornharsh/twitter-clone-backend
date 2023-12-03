@@ -11,6 +11,10 @@ const GroupConversation = (conversation: Router) => {
   group.put("/add/:id", Controllers.AddGroupConversationMemberController);
   group.put("/remove/:id", Controllers.RemoveGroupConversationMemberController);
   group.put("/admin/:id", Controllers.AddGroupConversationAdminController);
+  group.delete(
+    "/admin/:id",
+    Controllers.RemoveGroupConversationAdminController
+  );
 
   //user
   group.put("/leave/:id", Controllers.LeaveGroupConversationController);
