@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.GetGroupConversationController = exports.GetGroupConversationsController = exports.AdminCreateGroupConversationController = void 0;
+exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.SendMessageToGroupConversationController = exports.GetGroupConversationController = exports.GetGroupConversationsController = exports.AdminCreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
@@ -131,6 +131,60 @@ const GetGroupConversationController = async (req, res) => {
     }
 };
 exports.GetGroupConversationController = GetGroupConversationController;
+const SendMessageToGroupConversationController = async (req, res) => {
+    try {
+        const email = req.get("email");
+        const { id } = req.params;
+        const message = req.body.message ? req.body.message : "";
+        const messageMedia = req.body.messageMedia ? req.body.messageMedia : [];
+        const user = await User_1.default.findOne({ email });
+        if (!user) {
+            res.status(401).json({ message: "User not allowed" });
+            return;
+        }
+        if (!id) {
+            res.status(400).json({ message: "Conversation Id is required!" });
+            return;
+        }
+        if (!message) {
+            res.status(400).json({ message: "Message is required!" });
+            return;
+        }
+        const groupConversation = await GroupConversation_1.GroupConversationModel.findOne({
+            _id: id,
+            groupMembers: user._id,
+        });
+        if (!groupConversation) {
+            res.status(400).json({ message: "Conversation not found!" });
+            return;
+        }
+        if (!groupConversation.groupMembers.includes(user._id)) {
+            res.status(400).json({ message: "You are not a member!" });
+            return;
+        }
+        const groupMessage = await GroupConversation_1.GroupConversationMessageModel.create({
+            groupId: groupConversation._id,
+            message: message,
+            messageMedia: messageMedia,
+            sender: user._id,
+        });
+        const groupConversationRef = Firebase_1.firestoreDb
+            .collection("groupConversations")
+            .doc(groupConversation._id.toString());
+        await groupConversationRef.collection("groupMessages").add({
+            groupMessageId: groupMessage._id.toString(),
+            groupMessage: groupMessage.message,
+            messageMedia: groupMessage.messageMedia,
+            sender: groupMessage.sender.toString(),
+            createdAt: new Date(groupMessage.createdAt).getTime(),
+        });
+        res.status(200).json({ message: "Message sent!", groupConversation });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.SendMessageToGroupConversationController = SendMessageToGroupConversationController;
 const AdminUpdateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");

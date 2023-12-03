@@ -22,5 +22,6 @@ const GroupConversation = (conversation) => {
     group.delete("/:id", Controllers_1.default.AdminDeleteGroupConversationController);
     group.put("/leave/:id", Controllers_1.default.LeaveGroupConversationController);
     group.put("/join/:id", Controllers_1.default.JoinGroupConversationController);
+    group.post("/message/:id", Controllers_1.default.SendMessageToGroupConversationController);
 };
 exports.default = GroupConversation;

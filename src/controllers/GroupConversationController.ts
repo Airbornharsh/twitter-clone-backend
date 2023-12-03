@@ -168,6 +168,73 @@ export const GetGroupConversationController: RequestHandler = async (
   }
 };
 
+export const SendMessageToGroupConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const email = req.get("email");
+    const { id } = req.params;
+    const message = req.body.message ? req.body.message : "";
+    const messageMedia = req.body.messageMedia ? req.body.messageMedia : [];
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(401).json({ message: "User not allowed" });
+      return;
+    }
+
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+
+    if (!message) {
+      res.status(400).json({ message: "Message is required!" });
+      return;
+    }
+
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+      groupMembers: user._id,
+    });
+
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    if (!groupConversation.groupMembers.includes(user._id)) {
+      res.status(400).json({ message: "You are not a member!" });
+      return;
+    }
+
+    const groupMessage = await GroupConversationMessageModel.create({
+      groupId: groupConversation._id,
+      message: message,
+      messageMedia: messageMedia,
+      sender: user._id,
+    });
+
+    const groupConversationRef = firestoreDb
+      .collection("groupConversations")
+      .doc(groupConversation._id.toString());
+
+    await groupConversationRef.collection("groupMessages").add({
+      groupMessageId: groupMessage._id.toString(),
+      groupMessage: groupMessage.message,
+      messageMedia: groupMessage.messageMedia as string[],
+      sender: groupMessage.sender.toString(),
+      createdAt: new Date(groupMessage.createdAt).getTime(),
+    });
+
+    res.status(200).json({ message: "Message sent!", groupConversation });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
 export const AdminUpdateGroupConversationController: RequestHandler = async (
   req,
   res
