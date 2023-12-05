@@ -15,6 +15,10 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
   try {
     const email = req.get("email");
     const { groupName, members } = req.body;
+    const groupDescription = req.body.groupDescription
+      ? req.body.groupDescription
+      : "";
+    const groupImage = req.body.groupImage ? req.body.groupImage : "";
 
     const user = await UserModel.findOne({ email });
 
@@ -57,6 +61,8 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
 
     const groupConversation = await GroupConversationModel.create({
       groupName: groupName,
+      groupDescription: groupDescription,
+      groupImage: groupImage,
       groupAdmin: [user._id],
       groupMembers: [...members, user._id],
     });

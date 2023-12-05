@@ -12,6 +12,10 @@ const AdminCreateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
         const { groupName, members } = req.body;
+        const groupDescription = req.body.groupDescription
+            ? req.body.groupDescription
+            : "";
+        const groupImage = req.body.groupImage ? req.body.groupImage : "";
         const user = await User_1.default.findOne({ email });
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });
@@ -44,6 +48,8 @@ const AdminCreateGroupConversationController = async (req, res) => {
         }
         const groupConversation = await GroupConversation_1.GroupConversationModel.create({
             groupName: groupName,
+            groupDescription: groupDescription,
+            groupImage: groupImage,
             groupAdmin: [user._id],
             groupMembers: [...members, user._id],
         });
