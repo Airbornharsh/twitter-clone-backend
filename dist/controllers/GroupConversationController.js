@@ -131,13 +131,17 @@ const GetGroupConversationController = async (req, res) => {
             _id: id,
             groupMembers: user._id,
         })
-            .select("groupName groupDescription groupImage groupAdmin groupMembers createdAt")
+            .select("groupName groupDescription groupImage groupAdmin groupMembers requestedMembers createdAt")
             .populate({
             path: "groupAdmin",
             select: "name userName profileImage",
         })
             .populate({
             path: "groupMembers",
+            select: "name userName profileImage",
+        })
+            .populate({
+            path: "requestedMembers",
             select: "name userName profileImage",
         });
         if (!groupConversation) {
