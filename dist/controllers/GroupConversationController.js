@@ -11,11 +11,12 @@ const GroupConversation_1 = require("../models/GroupConversation");
 const AdminCreateGroupConversationController = async (req, res) => {
     try {
         const email = req.get("email");
-        const { groupName, members } = req.body;
+        const { groupName } = req.body;
         const groupDescription = req.body.groupDescription
             ? req.body.groupDescription
             : "";
         const groupImage = req.body.groupImage ? req.body.groupImage : "";
+        const members = req.body.members ? req.body.members : [];
         const user = await User_1.default.findOne({ email });
         if (!user) {
             res.status(401).json({ message: "User not allowed!" });
@@ -25,22 +26,16 @@ const AdminCreateGroupConversationController = async (req, res) => {
             res.status(400).json({ message: "Group Name is required!" });
             return;
         }
-        if (!members) {
-            res.status(400).json({ message: "Members is required!" });
-            return;
-        }
-        const membersExist = await User_1.default.find({ _id: { $in: members } });
-        if (!membersExist) {
-            res.status(400).json({ message: "Members not found!" });
-            return;
-        }
-        if (members.length < 1) {
-            res.status(400).json({ message: "Members must be more than 1!" });
-            return;
-        }
-        if (members.length > 100) {
-            res.status(400).json({ message: "Members must be less than 100!" });
-            return;
+        if (members) {
+            if (members.length > 100) {
+                res.status(400).json({ message: "Members must be less than 100!" });
+                return;
+            }
+            const membersExist = await User_1.default.find({ _id: { $in: members } });
+            if (!membersExist) {
+                res.status(400).json({ message: "Members not found!" });
+                return;
+            }
         }
         if (members.includes(user._id)) {
             res.status(400).json({ message: "Members must not include you!" });

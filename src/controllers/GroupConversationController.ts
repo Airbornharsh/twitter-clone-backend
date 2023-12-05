@@ -14,11 +14,12 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
 ) => {
   try {
     const email = req.get("email");
-    const { groupName, members } = req.body;
+    const { groupName } = req.body;
     const groupDescription = req.body.groupDescription
       ? req.body.groupDescription
       : "";
     const groupImage = req.body.groupImage ? req.body.groupImage : "";
+    const members = req.body.members ? req.body.members : [];
 
     const user = await UserModel.findOne({ email });
 
@@ -32,26 +33,18 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
       return;
     }
 
-    if (!members) {
-      res.status(400).json({ message: "Members is required!" });
-      return;
-    }
+    if (members) {
+      if (members.length > 100) {
+        res.status(400).json({ message: "Members must be less than 100!" });
+        return;
+      }
 
-    const membersExist = await UserModel.find({ _id: { $in: members } });
+      const membersExist = await UserModel.find({ _id: { $in: members } });
 
-    if (!membersExist) {
-      res.status(400).json({ message: "Members not found!" });
-      return;
-    }
-
-    if (members.length < 1) {
-      res.status(400).json({ message: "Members must be more than 1!" });
-      return;
-    }
-
-    if (members.length > 100) {
-      res.status(400).json({ message: "Members must be less than 100!" });
-      return;
+      if (!membersExist) {
+        res.status(400).json({ message: "Members not found!" });
+        return;
+      }
     }
 
     if (members.includes(user._id)) {
