@@ -9,15 +9,8 @@ export const CreateConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { userId } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const user2 = await UserModel.findOne({ _id: userId });
 
@@ -88,14 +81,7 @@ export const CreateConversationController: RequestHandler = async (
 
 export const GetConservationsController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const conversations = await ConversationModel.find({
       members: { $in: [user._id] },
@@ -115,14 +101,7 @@ export const GetUserConservationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const conversationId = req.params.id;
 
@@ -149,14 +128,7 @@ export const GetUserConservationController: RequestHandler = async (
 
 export const GetConservationController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const conversationId = req.params.id;
 
@@ -200,16 +172,9 @@ export const GetConservationController: RequestHandler = async (req, res) => {
 
 export const SendMessageController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const conversationId = req.params.id;
     const { message, messageMedia, recieverId } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const reciever = await UserModel.findOne({ _id: recieverId });
 
@@ -262,16 +227,9 @@ export const SendMessageController: RequestHandler = async (req, res) => {
 
 export const ReadMessageController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const conversationId = req.params.id;
     const messageId = req.params.messageId;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const conversation = await ConversationModel.findOne({
       _id: conversationId,

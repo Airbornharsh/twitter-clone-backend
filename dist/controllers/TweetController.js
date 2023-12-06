@@ -11,13 +11,8 @@ const TweetHelper_1 = require("../helpers/TweetHelper");
 const Notification_1 = require("../models/Notification");
 const AddTweetController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const { title, tweetMedia } = req.body;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         if (!title) {
             res.status(400).json({ message: "Title is required!" });
             return;
@@ -46,12 +41,7 @@ const AddTweetController = async (req, res) => {
 exports.AddTweetController = AddTweetController;
 const GetTweetsController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const tweets = (await user.populate("tweets")).tweets
             .sort((a, b) => b.createdAt - a.createdAt)
             .filter((tweet) => !tweet.reply);
@@ -64,13 +54,8 @@ const GetTweetsController = async (req, res) => {
 exports.GetTweetsController = GetTweetsController;
 const GetTweetController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const tweetId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const tweet = await Tweet_1.default.findOne({ _id: tweetId, userId: user._id });
         if (!tweet) {
             res.status(404).json({ message: "Tweet not found!" });
@@ -85,13 +70,7 @@ const GetTweetController = async (req, res) => {
 exports.GetTweetController = GetTweetController;
 const GetTweetsRepliesController = async (req, res) => {
     try {
-        console.log("Water");
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const tweets = (await user.populate("retweetedTweets")).retweetedTweets.sort((a, b) => b.createdAt - a.createdAt);
         res.status(200).json({ message: "Tweets fetched successfully!", tweets });
     }
@@ -102,7 +81,7 @@ const GetTweetsRepliesController = async (req, res) => {
 exports.GetTweetsRepliesController = GetTweetsRepliesController;
 const AddTweetReplyHandler = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const tweetId = req.params.id;
         const { title, tweetMedia } = req.body;
         if (!title) {
@@ -115,11 +94,6 @@ const AddTweetReplyHandler = async (req, res) => {
         }
         if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
             res.status(400).json({ message: "Media cannot be more than 4!" });
-            return;
-        }
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
             return;
         }
         const tweet = await Tweet_1.default.findById(tweetId);
@@ -162,13 +136,8 @@ const AddTweetReplyHandler = async (req, res) => {
 exports.AddTweetReplyHandler = AddTweetReplyHandler;
 const UpdateTweetLikeController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const tweetId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const tweet = await Tweet_1.default.findById(tweetId);
         if (!tweet) {
             res.status(404).json({ message: "Tweet not found!" });
@@ -206,13 +175,8 @@ const UpdateTweetLikeController = async (req, res) => {
 exports.UpdateTweetLikeController = UpdateTweetLikeController;
 const UpdateTweetBookmarkController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const tweetId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const tweet = await Tweet_1.default.findById(tweetId);
         if (!tweet) {
             res.status(404).json({ message: "Tweet not found!" });

@@ -15,8 +15,8 @@ const User = (router) => {
     router.use("/user", user);
     user.post("/", Controllers_1.default.AddUserController);
     user.get("/", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetUserController);
-    user.get("/other/:id", Controllers_1.default.GetOtherUserController);
-    user.put("/", Controllers_1.default.UpdateUserHandler);
+    user.get("/other/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetOtherUserController);
+    user.put("/", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.UpdateUserHandler);
     (0, UserPrivacy_1.default)(user);
     (0, UserList_1.default)(user);
     (0, Notification_1.default)(user);

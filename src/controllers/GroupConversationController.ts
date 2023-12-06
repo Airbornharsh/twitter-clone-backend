@@ -13,20 +13,13 @@ export const AdminCreateGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { groupName } = req.body;
     const groupDescription = req.body.groupDescription
       ? req.body.groupDescription
       : "";
     const groupImage = req.body.groupImage ? req.body.groupImage : "";
     const members = req.body.members ? req.body.members : [];
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!groupName) {
       res.status(400).json({ message: "Group Name is required!" });
@@ -97,14 +90,7 @@ export const GetGroupConversationsController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const groupConversations = await GroupConversationModel.find({
       groupMembers: user._id,
@@ -126,15 +112,8 @@ export const SearchGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const name = req.params.name ? req.params.name : "";
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed" });
-      return;
-    }
 
     const groupConversations = await GroupConversationModel.find({
       groupName: { $regex: name, $options: "i" },
@@ -151,15 +130,8 @@ export const GetGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -202,17 +174,10 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const message = req.body.message ? req.body.message : "";
     const messageMedia = req.body.messageMedia ? req.body.messageMedia : [];
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -267,16 +232,9 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
 
 // export const ReadGroupMessageController: RequestHandler = async (req, res) => {
 //   try {
-//     const email = req.get("email");
-//     const { id } = req.params;
+  //   const user = res.locals.user;
+  //   const { id } = req.params;
 //     const { messageId } = req.body;
-
-//     const user = await UserModel.findOne({ email });
-
-//     if (!user) {
-//       res.status(401).json({ message: "User not allowed!" });
-//       return;
-//     }
 
 //     if (!id) {
 //       res.status(400).json({ message: "Conversation Id is required!" });
@@ -350,7 +308,7 @@ export const AdminUpdateGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const groupName = req.body.groupName ? req.body.groupName : "";
     const groupDescription = req.body.groupDescription
@@ -364,12 +322,6 @@ export const AdminUpdateGroupConversationController: RequestHandler = async (
     Object.assign(groupData, groupDescription ? { groupDescription } : {});
     Object.assign(groupData, groupImage ? { groupImage } : {});
 
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
       return;
@@ -439,16 +391,9 @@ export const AdminAddGroupConversationMemberController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const { members } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -530,16 +475,9 @@ export const AdminAddGroupConversationMemberController: RequestHandler = async (
 export const AdminRemoveGroupConversationMemberController: RequestHandler =
   async (req, res) => {
     try {
-      const email = req.get("email");
+      const user = res.locals.user;
       const { id } = req.params;
       const { members } = req.body;
-
-      const user = await UserModel.findOne({ email });
-
-      if (!user) {
-        res.status(401).json({ message: "User not allowed!" });
-        return;
-      }
 
       if (!id) {
         res.status(400).json({ message: "Conversation Id is required!" });
@@ -623,16 +561,9 @@ export const AdminAddGroupConversationAdminController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const { members } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -708,16 +639,9 @@ export const AdminAddGroupConversationAdminController: RequestHandler = async (
 export const AdminRemoveGroupConversationAdminController: RequestHandler =
   async (req, res) => {
     try {
-      const email = req.get("email");
+      const user = res.locals.user;
       const { id } = req.params;
       const { members } = req.body;
-
-      const user = await UserModel.findOne({ email });
-
-      if (!user) {
-        res.status(401).json({ message: "User not allowed!" });
-        return;
-      }
 
       if (!id) {
         res.status(400).json({ message: "Conversation Id is required!" });
@@ -795,16 +719,9 @@ export const AdminAllowGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const { userId } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -889,16 +806,9 @@ export const AdminDenyGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
     const { userId } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -977,15 +887,8 @@ export const AdminDeleteGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -1036,15 +939,8 @@ export const LeaveGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });
@@ -1103,15 +999,8 @@ export const JoinGroupConversationController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { id } = req.params;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!id) {
       res.status(400).json({ message: "Conversation Id is required!" });

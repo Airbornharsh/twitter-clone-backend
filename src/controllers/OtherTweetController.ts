@@ -6,14 +6,7 @@ import { isAuthorised } from "../helpers/TweetHelper";
 
 export const GetAllOtherTweetController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     let tweets = await TweetModel.find({
       reply: null,
@@ -35,15 +28,8 @@ export const GetAllOtherTweetController: RequestHandler = async (req, res) => {
 
 export const GetOtherTweetsController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.otherUserId;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findById(otherUserId);
 
@@ -69,15 +55,8 @@ export const GetOtherTweetsController: RequestHandler = async (req, res) => {
 
 export const GetOtherTweetController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherTweetId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const tweet = await TweetModel.findById(otherTweetId)
       .populate(["userId", "tweetReply"])
@@ -113,15 +92,8 @@ export const GetOtherTweetsRepliesController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.otherUserId;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findById(otherUserId);
 

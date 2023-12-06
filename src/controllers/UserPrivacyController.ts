@@ -8,10 +8,10 @@ import {
 
 export const UpdatePrivacyHandler: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const privacy = req.body.private;
 
-    await UserModel.findOneAndUpdate({ email }, { private: privacy });
+    await UserModel.findOneAndUpdate({ _id: user._id }, { private: privacy });
 
     res.status(200).json({ message: "Updated the Private" });
   } catch (e) {
@@ -24,15 +24,8 @@ export const UpdateAllowingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -59,15 +52,8 @@ export const UpdateAllowingUserController: RequestHandler = async (
 
 export const UpdatePendingUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -94,15 +80,8 @@ export const UpdatePendingUserController: RequestHandler = async (req, res) => {
 
 export const UpdateDenyingUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -130,15 +109,8 @@ export const UpdateUnpendingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -166,15 +138,8 @@ export const UpdateBlockingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -214,15 +179,8 @@ export const UpdateUnblockingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -250,15 +208,8 @@ export const UpdateFollowingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findById(otherUserId);
 
@@ -326,15 +277,8 @@ export const UpdateUnfollowingUserController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findById(otherUserId);
 
@@ -362,15 +306,8 @@ export const UpdateRemoveFollowerController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findById(otherUserId);
 

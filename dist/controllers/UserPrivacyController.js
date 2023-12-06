@@ -9,9 +9,9 @@ const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Notification_1 = require("../models/Notification");
 const UpdatePrivacyHandler = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const privacy = req.body.private;
-        await User_1.default.findOneAndUpdate({ email }, { private: privacy });
+        await User_1.default.findOneAndUpdate({ _id: user._id }, { private: privacy });
         res.status(200).json({ message: "Updated the Private" });
     }
     catch (e) {
@@ -21,13 +21,8 @@ const UpdatePrivacyHandler = async (req, res) => {
 exports.UpdatePrivacyHandler = UpdatePrivacyHandler;
 const UpdateAllowingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -50,13 +45,8 @@ const UpdateAllowingUserController = async (req, res) => {
 exports.UpdateAllowingUserController = UpdateAllowingUserController;
 const UpdatePendingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -79,13 +69,8 @@ const UpdatePendingUserController = async (req, res) => {
 exports.UpdatePendingUserController = UpdatePendingUserController;
 const UpdateDenyingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -106,13 +91,8 @@ const UpdateDenyingUserController = async (req, res) => {
 exports.UpdateDenyingUserController = UpdateDenyingUserController;
 const UpdateUnpendingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -133,13 +113,8 @@ const UpdateUnpendingUserController = async (req, res) => {
 exports.UpdateUnpendingUserController = UpdateUnpendingUserController;
 const UpdateBlockingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -172,13 +147,8 @@ const UpdateBlockingUserController = async (req, res) => {
 exports.UpdateBlockingUserController = UpdateBlockingUserController;
 const UpdateUnblockingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -199,13 +169,8 @@ const UpdateUnblockingUserController = async (req, res) => {
 exports.UpdateUnblockingUserController = UpdateUnblockingUserController;
 const UpdateFollowingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findById(otherUserId);
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -260,13 +225,8 @@ const UpdateFollowingUserController = async (req, res) => {
 exports.UpdateFollowingUserController = UpdateFollowingUserController;
 const UpdateUnfollowingUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findById(otherUserId);
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -287,13 +247,8 @@ const UpdateUnfollowingUserController = async (req, res) => {
 exports.UpdateUnfollowingUserController = UpdateUnfollowingUserController;
 const UpdateRemoveFollowerController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findById(otherUserId);
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });

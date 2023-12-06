@@ -1,19 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetNotificationsController = void 0;
-const User_1 = __importDefault(require("../models/User"));
 const Notification_1 = require("../models/Notification");
 const GetNotificationsController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const notifications = await Notification_1.NotificationModel.find({ to: user._id })
             .populate([
             {

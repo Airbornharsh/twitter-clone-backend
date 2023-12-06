@@ -34,15 +34,8 @@ export const GetUserController: RequestHandler = async (req, res) => {
 
 export const GetOtherUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const otherUserId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const otherUser = await UserModel.findOne({ _id: otherUserId });
 
@@ -66,7 +59,7 @@ export const GetOtherUserController: RequestHandler = async (req, res) => {
 
 export const UpdateUserHandler: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const { name, age, profileImage, coverImage, bio, dob, location, website } =
       req.body;
 
@@ -85,7 +78,7 @@ export const UpdateUserHandler: RequestHandler = async (req, res) => {
       website && { website }
     );
 
-    await UserModel.findOneAndUpdate({ email }, data);
+    await UserModel.findOneAndUpdate({ email: user.email }, data);
 
     res.status(200).json({ message: "Updated the User" });
   } catch (e) {

@@ -1,19 +1,48 @@
 import { Router } from "express";
 import Controllers from "../controllers/Controllers";
+import { AuthenticateUser } from "../middlewares/AuthMiddleware";
 
 const UserList = (user: Router) => {
   const list = Router();
 
   user.use("/list", list);
 
-  list.get("/", Controllers.GetUsersController);
-  list.get("/pending/", Controllers.GetPendingUsersController);
-  list.get("/allowed/", Controllers.GetAllowedUsersController);
-  list.get("/blocked/", Controllers.GetBlockedUsersController);
-  list.get("/following/", Controllers.GetFollowingUsersController);
-  list.get("/followers/", Controllers.GetFollowersUsersController);
-  list.get("/following/:id", Controllers.GetOtherFollowingUsersController);
-  list.get("/followers/:id", Controllers.GetOtherFollowersUsersController);
+  list.get("/", AuthenticateUser, Controllers.GetUsersController);
+  list.get(
+    "/pending/",
+    AuthenticateUser,
+    Controllers.GetPendingUsersController
+  );
+  list.get(
+    "/allowed/",
+    AuthenticateUser,
+    Controllers.GetAllowedUsersController
+  );
+  list.get(
+    "/blocked/",
+    AuthenticateUser,
+    Controllers.GetBlockedUsersController
+  );
+  list.get(
+    "/following/",
+    AuthenticateUser,
+    Controllers.GetFollowingUsersController
+  );
+  list.get(
+    "/followers/",
+    AuthenticateUser,
+    Controllers.GetFollowersUsersController
+  );
+  list.get(
+    "/following/:id",
+    AuthenticateUser,
+    Controllers.GetOtherFollowingUsersController
+  );
+  list.get(
+    "/followers/:id",
+    AuthenticateUser,
+    Controllers.GetOtherFollowersUsersController
+  );
 };
 
 export default UserList;

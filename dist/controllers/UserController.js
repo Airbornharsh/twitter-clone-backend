@@ -36,13 +36,8 @@ const GetUserController = async (req, res) => {
 exports.GetUserController = GetUserController;
 const GetOtherUserController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -62,12 +57,12 @@ const GetOtherUserController = async (req, res) => {
 exports.GetOtherUserController = GetOtherUserController;
 const UpdateUserHandler = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const { name, age, profileImage, coverImage, bio, dob, location, website } = req.body;
         const data = {};
         // name && (data.name = name);
         Object.assign(data, name && { name }, age && { age }, profileImage && { profileImage }, coverImage && { coverImage }, bio && { bio }, dob && { dob }, location && { location }, website && { website });
-        await User_1.default.findOneAndUpdate({ email }, data);
+        await User_1.default.findOneAndUpdate({ email: user.email }, data);
         res.status(200).json({ message: "Updated the User" });
     }
     catch (e) {

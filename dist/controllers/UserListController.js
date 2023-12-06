@@ -9,15 +9,10 @@ const User_1 = __importDefault(require("../models/User"));
 const UserHelper_1 = require("../helpers/UserHelper");
 const GetUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const search = req.query.search.trim();
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const users = await User_1.default.find({
-            email: { $ne: email },
+            _id: { $ne: user._id },
             name: { $regex: search, $options: "i" },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
@@ -32,15 +27,9 @@ const GetUsersController = async (req, res) => {
 exports.GetUsersController = GetUsersController;
 const GetAllowedUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const users = await User_1.default.find({
-            _id: { $in: user.allowed },
-            email: { $ne: email },
+            _id: { $in: user.allowed, $ne: user._id },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -55,15 +44,9 @@ const GetAllowedUsersController = async (req, res) => {
 exports.GetAllowedUsersController = GetAllowedUsersController;
 const GetBlockedUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const users = await User_1.default.find({
-            _id: { $in: user.blocked },
-            email: { $ne: email },
+            _id: { $in: user.blocked, $ne: user._id },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -78,15 +61,9 @@ const GetBlockedUsersController = async (req, res) => {
 exports.GetBlockedUsersController = GetBlockedUsersController;
 const GetPendingUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const users = await User_1.default.find({
-            _id: { $in: user.pending },
-            email: { $ne: email },
+            _id: { $in: user.pending, $ne: user._id },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -101,15 +78,9 @@ const GetPendingUsersController = async (req, res) => {
 exports.GetPendingUsersController = GetPendingUsersController;
 const GetFollowingUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const users = await User_1.default.find({
-            _id: { $in: user.following },
-            email: { $ne: email },
+            _id: { $in: user.following, $ne: user._id },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -124,15 +95,9 @@ const GetFollowingUsersController = async (req, res) => {
 exports.GetFollowingUsersController = GetFollowingUsersController;
 const GetFollowersUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const users = await User_1.default.find({
-            _id: { $in: user.followers },
-            email: { $ne: email },
+            _id: { $in: user.followers, $ne: user._id },
         });
         const tempUsers = (0, UserHelper_1.ConvertUserListToPrivateList)(users, user);
         res.status(200).json({
@@ -147,13 +112,8 @@ const GetFollowersUsersController = async (req, res) => {
 exports.GetFollowersUsersController = GetFollowersUsersController;
 const GetOtherFollowingUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -184,13 +144,8 @@ const GetOtherFollowingUsersController = async (req, res) => {
 exports.GetOtherFollowingUsersController = GetOtherFollowingUsersController;
 const GetOtherFollowersUsersController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findOne({ _id: otherUserId });
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });

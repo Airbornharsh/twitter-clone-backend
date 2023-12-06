@@ -13,8 +13,8 @@ const User = (router: Router) => {
 
   user.post("/", Controllers.AddUserController);
   user.get("/", AuthenticateUser, Controllers.GetUserController);
-  user.get("/other/:id", Controllers.GetOtherUserController);
-  user.put("/", Controllers.UpdateUserHandler);
+  user.get("/other/:id", AuthenticateUser, Controllers.GetOtherUserController);
+  user.put("/", AuthenticateUser, Controllers.UpdateUserHandler);
 
   Privacy(user);
   UserList(user);

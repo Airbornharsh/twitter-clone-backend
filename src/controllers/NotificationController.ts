@@ -6,14 +6,7 @@ import {
 
 export const GetNotificationsController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const notifications = await NotificationModel.find({ to: user._id })
       .populate([

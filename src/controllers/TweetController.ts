@@ -11,16 +11,8 @@ import {
 
 export const AddTweetController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
+    const user = res.locals.user;
     const { title, tweetMedia } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     if (!title) {
       res.status(400).json({ message: "Title is required!" });
@@ -54,14 +46,7 @@ export const AddTweetController: RequestHandler = async (req, res) => {
 
 export const GetTweetsController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const tweets = (await user.populate("tweets")).tweets
       .sort((a: any, b: any) => b.createdAt - a.createdAt)
@@ -75,15 +60,8 @@ export const GetTweetsController: RequestHandler = async (req, res) => {
 
 export const GetTweetController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const tweetId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const tweet = await TweetModel.findOne({ _id: tweetId, userId: user._id });
 
@@ -100,15 +78,7 @@ export const GetTweetController: RequestHandler = async (req, res) => {
 
 export const GetTweetsRepliesController: RequestHandler = async (req, res) => {
   try {
-    console.log("Water");
-    const email = req.get("email");
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
+    const user = res.locals.user;
 
     const tweets = (
       await user.populate("retweetedTweets")
@@ -122,7 +92,7 @@ export const GetTweetsRepliesController: RequestHandler = async (req, res) => {
 
 export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const tweetId = req.params.id;
 
     const { title, tweetMedia } = req.body;
@@ -139,13 +109,6 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
 
     if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
       res.status(400).json({ message: "Media cannot be more than 4!" });
-      return;
-    }
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
       return;
     }
 
@@ -196,15 +159,8 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
 
 export const UpdateTweetLikeController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const tweetId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const tweet = await TweetModel.findById(tweetId);
 
@@ -251,15 +207,8 @@ export const UpdateTweetBookmarkController: RequestHandler = async (
   res
 ) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
     const tweetId = req.params.id;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      res.status(401).json({ message: "User not allowed!" });
-      return;
-    }
 
     const tweet = await TweetModel.findById(tweetId);
 

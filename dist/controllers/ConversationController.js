@@ -10,13 +10,8 @@ const Conversation_1 = require("../models/Conversation");
 const Firebase_1 = require("../config/Firebase");
 const CreateConversationController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const { userId } = req.body;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const user2 = await User_1.default.findOne({ _id: userId });
         if (!user2) {
             res.status(400).json({ message: "User not found!" });
@@ -74,12 +69,7 @@ const CreateConversationController = async (req, res) => {
 exports.CreateConversationController = CreateConversationController;
 const GetConservationsController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const conversations = await Conversation_1.ConversationModel.find({
             members: { $in: [user._id] },
         }).populate({
@@ -95,12 +85,7 @@ const GetConservationsController = async (req, res) => {
 exports.GetConservationsController = GetConservationsController;
 const GetUserConservationController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const conversationId = req.params.id;
         const conversation = await Conversation_1.ConversationModel.findOne({
             _id: conversationId,
@@ -124,12 +109,7 @@ const GetUserConservationController = async (req, res) => {
 exports.GetUserConservationController = GetUserConservationController;
 const GetConservationController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         const conversationId = req.params.id;
         const conversation = await Conversation_1.ConversationModel.findOne({
             _id: conversationId,
@@ -170,14 +150,9 @@ const GetConservationController = async (req, res) => {
 exports.GetConservationController = GetConservationController;
 const SendMessageController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const conversationId = req.params.id;
         const { message, messageMedia, recieverId } = req.body;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const reciever = await User_1.default.findOne({ _id: recieverId });
         if (!reciever) {
             res.status(404).json({ message: "Reciever not found!" });
@@ -222,14 +197,9 @@ const SendMessageController = async (req, res) => {
 exports.SendMessageController = SendMessageController;
 const ReadMessageController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const conversationId = req.params.id;
         const messageId = req.params.messageId;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const conversation = await Conversation_1.ConversationModel.findOne({
             _id: conversationId,
             members: { $in: [user._id] },

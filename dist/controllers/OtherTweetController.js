@@ -10,12 +10,7 @@ const Tweet_1 = __importDefault(require("../models/Tweet"));
 const TweetHelper_1 = require("../helpers/TweetHelper");
 const GetAllOtherTweetController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
+        const user = res.locals.user;
         let tweets = await Tweet_1.default.find({
             reply: null,
         })
@@ -35,13 +30,8 @@ const GetAllOtherTweetController = async (req, res) => {
 exports.GetAllOtherTweetController = GetAllOtherTweetController;
 const GetOtherTweetsController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.otherUserId;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findById(otherUserId);
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
@@ -61,13 +51,8 @@ const GetOtherTweetsController = async (req, res) => {
 exports.GetOtherTweetsController = GetOtherTweetsController;
 const GetOtherTweetController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherTweetId = req.params.id;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const tweet = await Tweet_1.default.findById(otherTweetId)
             .populate(["userId", "tweetReply"])
             .exec();
@@ -94,13 +79,8 @@ const GetOtherTweetController = async (req, res) => {
 exports.GetOtherTweetController = GetOtherTweetController;
 const GetOtherTweetsRepliesController = async (req, res) => {
     try {
-        const email = req.get("email");
+        const user = res.locals.user;
         const otherUserId = req.params.otherUserId;
-        const user = await User_1.default.findOne({ email });
-        if (!user) {
-            res.status(401).json({ message: "User not allowed!" });
-            return;
-        }
         const otherUser = await User_1.default.findById(otherUserId);
         if (!otherUser) {
             res.status(404).json({ message: "User not found!" });
