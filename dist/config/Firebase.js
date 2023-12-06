@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.firestoreDb = void 0;
+exports.firebaseAuth = exports.firestoreDb = void 0;
 // const firebaseConfig = {
 //   apiKey: "AIzaSyDW8dOe99N3mWsqU1tRYg8D3YBnH2rd_NM",
 //   authDomain: "internship-task-twitter.firebaseapp.com",
@@ -27,3 +27,5 @@ firebase_admin_1.default.initializeApp({
 });
 const firestoreDb = firebase_admin_1.default.firestore();
 exports.firestoreDb = firestoreDb;
+const firebaseAuth = firebase_admin_1.default.auth();
+exports.firebaseAuth = firebaseAuth;

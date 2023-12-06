@@ -26,8 +26,7 @@ const AddUserController = async (req, res) => {
 exports.AddUserController = AddUserController;
 const GetUserController = async (req, res) => {
     try {
-        const email = req.get("email");
-        const user = await User_1.default.findOne({ email });
+        const user = res.locals.user;
         res.status(200).json({ message: "User fetched successfully!", user });
     }
     catch (e) {

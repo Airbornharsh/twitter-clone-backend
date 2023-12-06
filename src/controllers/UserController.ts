@@ -24,9 +24,8 @@ export const AddUserController: RequestHandler = async (req, res) => {
 
 export const GetUserController: RequestHandler = async (req, res) => {
   try {
-    const email = req.get("email");
+    const user = res.locals.user;
 
-    const user = await UserModel.findOne({ email });
     res.status(200).json({ message: "User fetched successfully!", user });
   } catch (e: any | unknown) {
     ErrorResponse(res, 500, e);

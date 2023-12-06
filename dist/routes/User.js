@@ -9,11 +9,12 @@ const UserPrivacy_1 = __importDefault(require("./UserPrivacy"));
 const UserList_1 = __importDefault(require("./UserList"));
 const Notification_1 = __importDefault(require("./Notification"));
 const Conservation_1 = __importDefault(require("./Conservation"));
+const AuthMiddleware_1 = require("../middlewares/AuthMiddleware");
 const User = (router) => {
     const user = (0, express_1.Router)();
     router.use("/user", user);
     user.post("/", Controllers_1.default.AddUserController);
-    user.get("/", Controllers_1.default.GetUserController);
+    user.get("/", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetUserController);
     user.get("/other/:id", Controllers_1.default.GetOtherUserController);
     user.put("/", Controllers_1.default.UpdateUserHandler);
     (0, UserPrivacy_1.default)(user);

@@ -4,6 +4,7 @@ import Privacy from "./UserPrivacy";
 import UserList from "./UserList";
 import Notification from "./Notification";
 import Conservation from "./Conservation";
+import { AuthenticateUser } from "../middlewares/AuthMiddleware";
 
 const User = (router: Router) => {
   const user = Router();
@@ -11,7 +12,7 @@ const User = (router: Router) => {
   router.use("/user", user);
 
   user.post("/", Controllers.AddUserController);
-  user.get("/", Controllers.GetUserController);
+  user.get("/", AuthenticateUser, Controllers.GetUserController);
   user.get("/other/:id", Controllers.GetOtherUserController);
   user.put("/", Controllers.UpdateUserHandler);
 

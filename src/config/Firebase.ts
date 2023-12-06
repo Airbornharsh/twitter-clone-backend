@@ -25,5 +25,6 @@ admin.initializeApp({
 });
 
 const firestoreDb = admin.firestore();
+const firebaseAuth = admin.auth();
 
-export { firestoreDb };
+export { firestoreDb, firebaseAuth };
