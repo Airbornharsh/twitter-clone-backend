@@ -585,7 +585,7 @@ export const AdminRemoveGroupConversationMemberController: RequestHandler =
       }
 
       await groupConversation.updateOne({
-        $pull: { groupMembers: { $in: members } },
+        $pull: { groupMembers: { $in: members }, groupAdmin: { $in: members } },
       });
 
       await UserModel.updateMany(

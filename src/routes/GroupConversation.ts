@@ -17,9 +17,9 @@ const GroupConversation = (conversation: Router) => {
     "/remove/:id",
     Controllers.AdminRemoveGroupConversationMemberController
   );
-  group.put("/admin/:id", Controllers.AdminAddGroupConversationAdminController);
-  group.delete(
-    "/admin/:id",
+  group.put("/makeadmin/:id", Controllers.AdminAddGroupConversationAdminController);
+  group.put(
+    "/removeadmin/:id",
     Controllers.AdminRemoveGroupConversationAdminController
   );
   group.patch("/allow/:id", Controllers.AdminAllowGroupConversationController);

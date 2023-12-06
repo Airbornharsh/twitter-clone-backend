@@ -459,7 +459,7 @@ const AdminRemoveGroupConversationMemberController = async (req, res) => {
             return;
         }
         await groupConversation.updateOne({
-            $pull: { groupMembers: { $in: members } },
+            $pull: { groupMembers: { $in: members }, groupAdmin: { $in: members } },
         });
         await User_1.default.updateMany({ _id: { $in: members } }, { $pull: { groupConversations: groupConversation._id } });
         const groupMessage = await GroupConversation_1.GroupConversationMessageModel.create({

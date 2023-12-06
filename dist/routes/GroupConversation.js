@@ -16,8 +16,8 @@ const GroupConversation = (conversation) => {
     group.put("/update/:id", Controllers_1.default.AdminUpdateGroupConversationController);
     group.put("/add/:id", Controllers_1.default.AdminAddGroupConversationMemberController);
     group.put("/remove/:id", Controllers_1.default.AdminRemoveGroupConversationMemberController);
-    group.put("/admin/:id", Controllers_1.default.AdminAddGroupConversationAdminController);
-    group.delete("/admin/:id", Controllers_1.default.AdminRemoveGroupConversationAdminController);
+    group.put("/makeadmin/:id", Controllers_1.default.AdminAddGroupConversationAdminController);
+    group.put("/removeadmin/:id", Controllers_1.default.AdminRemoveGroupConversationAdminController);
     group.patch("/allow/:id", Controllers_1.default.AdminAllowGroupConversationController);
     group.patch("/deny/:id", Controllers_1.default.AdminDenyGroupConversationController);
     group.delete("/:id", Controllers_1.default.AdminDeleteGroupConversationController);
