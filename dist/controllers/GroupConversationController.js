@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.SendMessageToGroupConversationController = exports.GetGroupConversationController = exports.SearchGroupConversationController = exports.GetGroupConversationsController = exports.AdminCreateGroupConversationController = void 0;
+exports.GetGroupVideoTokenConversationController = exports.JoinGroupConversationController = exports.LeaveGroupConversationController = exports.AdminDeleteGroupConversationController = exports.AdminDenyGroupConversationController = exports.AdminAllowGroupConversationController = exports.AdminRemoveGroupConversationAdminController = exports.AdminAddGroupConversationAdminController = exports.AdminRemoveGroupConversationMemberController = exports.AdminAddGroupConversationMemberController = exports.AdminUpdateGroupConversationController = exports.SendMessageToGroupConversationController = exports.GetGroupConversationController = exports.SearchGroupConversationController = exports.GetGroupConversationsController = exports.AdminCreateGroupConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const Firebase_1 = require("../config/Firebase");
 const User_1 = __importDefault(require("../models/User"));
 const GroupConversation_1 = require("../models/GroupConversation");
+const ConversationHelper_1 = require("../helpers/ConversationHelper");
 const AdminCreateGroupConversationController = async (req, res) => {
     try {
         const user = res.locals.user;
@@ -818,3 +819,30 @@ const JoinGroupConversationController = async (req, res) => {
     }
 };
 exports.JoinGroupConversationController = JoinGroupConversationController;
+const GetGroupVideoTokenConversationController = async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const { id } = req.params;
+        if (!id) {
+            res.status(400).json({ message: "Conversation Id is required!" });
+            return;
+        }
+        const groupConversation = await GroupConversation_1.GroupConversationModel.findOne({
+            _id: id,
+        });
+        if (!groupConversation) {
+            res.status(400).json({ message: "Conversation not found!" });
+            return;
+        }
+        if (!groupConversation.groupMembers.includes(user._id)) {
+            res.status(400).json({ message: "You are not a member!" });
+            return;
+        }
+        const token = await (0, ConversationHelper_1.videoToken)(groupConversation._id.toString(), user._id.toString());
+        res.status(200).json({ token });
+    }
+    catch (e) {
+        console.log(e);
+    }
+};
+exports.GetGroupVideoTokenConversationController = GetGroupVideoTokenConversationController;

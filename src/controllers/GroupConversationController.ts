@@ -7,6 +7,7 @@ import {
   GroupConversationModel,
 } from "../models/GroupConversation";
 import firebase from "firebase/compat/app";
+import { videoToken } from "../helpers/ConversationHelper";
 
 export const AdminCreateGroupConversationController: RequestHandler = async (
   req,
@@ -232,8 +233,8 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
 
 // export const ReadGroupMessageController: RequestHandler = async (req, res) => {
 //   try {
-  //   const user = res.locals.user;
-  //   const { id } = req.params;
+//   const user = res.locals.user;
+//   const { id } = req.params;
 //     const { messageId } = req.body;
 
 //     if (!id) {
@@ -1050,5 +1051,40 @@ export const JoinGroupConversationController: RequestHandler = async (
     res.status(200).json({ message: "You Requested to join the group!" });
   } catch (e) {
     ErrorResponse(res, 500, e);
+  }
+};
+
+export const GetGroupVideoTokenConversationController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const user = res.locals.user;
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ message: "Conversation Id is required!" });
+      return;
+    }
+    const groupConversation = await GroupConversationModel.findOne({
+      _id: id,
+    });
+    if (!groupConversation) {
+      res.status(400).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    if (!groupConversation.groupMembers.includes(user._id)) {
+      res.status(400).json({ message: "You are not a member!" });
+      return;
+    }
+
+    const token = await videoToken(
+      groupConversation._id.toString(),
+      user._id.toString()
+    );
+    res.status(200).json({ token });
+  } catch (e) {
+    console.log(e);
   }
 };

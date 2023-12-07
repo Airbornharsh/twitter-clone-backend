@@ -25,6 +25,7 @@ const GroupConversation = (conversation) => {
     group.put("/leave/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.LeaveGroupConversationController);
     group.put("/join/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.JoinGroupConversationController);
     group.post("/message/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.SendMessageToGroupConversationController);
+    group.get("/video/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetGroupVideoTokenConversationController);
     // group.patch("/read/:id", Controllers.ReadGroupMessageController);
 };
 exports.default = GroupConversation;

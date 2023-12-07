@@ -79,6 +79,11 @@ const GroupConversation = (conversation: Router) => {
     AuthenticateUser,
     Controllers.SendMessageToGroupConversationController
   );
+  group.get(
+    "/video/:id",
+    AuthenticateUser,
+    Controllers.GetGroupVideoTokenConversationController
+  );
   // group.patch("/read/:id", Controllers.ReadGroupMessageController);
 };
 
