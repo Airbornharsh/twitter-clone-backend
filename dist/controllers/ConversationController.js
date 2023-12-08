@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReadMessageController = exports.SendMessageController = exports.GetConservationController = exports.GetUserConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
+exports.GetConversationVideoTokenController = exports.ReadMessageController = exports.SendMessageController = exports.GetConservationController = exports.GetUserConservationController = exports.GetConservationsController = exports.CreateConversationController = void 0;
 const ErrorHelper_1 = require("../helpers/ErrorHelper");
 const User_1 = __importDefault(require("../models/User"));
 const Conversation_1 = require("../models/Conversation");
 const Firebase_1 = require("../config/Firebase");
+const ConversationHelper_1 = require("../helpers/ConversationHelper");
 const CreateConversationController = async (req, res) => {
     try {
         const user = res.locals.user;
@@ -224,3 +225,23 @@ const ReadMessageController = async (req, res) => {
     }
 };
 exports.ReadMessageController = ReadMessageController;
+const GetConversationVideoTokenController = async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const conversationId = req.params.id;
+        const conversation = await Conversation_1.ConversationModel.findOne({
+            _id: conversationId,
+            members: { $in: [user._id] },
+        });
+        if (!conversation) {
+            res.status(404).json({ message: "Conversation not found!" });
+            return;
+        }
+        const token = await (0, ConversationHelper_1.personalVideoToken)(conversationId, user._id.toString());
+        res.status(200).json({ message: "Token generated!", token });
+    }
+    catch (e) {
+        (0, ErrorHelper_1.ErrorResponse)(res, 500, e);
+    }
+};
+exports.GetConversationVideoTokenController = GetConversationVideoTokenController;

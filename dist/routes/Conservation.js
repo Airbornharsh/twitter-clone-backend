@@ -17,6 +17,7 @@ const Conservation = (user) => {
     conservation.get("/user/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetUserConservationController);
     conservation.put("/send/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.SendMessageController);
     conservation.put("/read/:id/:messageId", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.ReadMessageController);
+    conservation.get("/video/:id", AuthMiddleware_1.AuthenticateUser, Controllers_1.default.GetConversationVideoTokenController);
     // conservation.delete("/:id", Controllers.DeleteConservationController);
 };
 exports.default = Conservation;

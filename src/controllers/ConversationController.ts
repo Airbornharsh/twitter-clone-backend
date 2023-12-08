@@ -3,6 +3,7 @@ import { ErrorResponse } from "../helpers/ErrorHelper";
 import UserModel from "../models/User";
 import { ConversationModel, MessageModel } from "../models/Conversation";
 import { firestoreDb } from "../config/Firebase";
+import { personalVideoToken } from "../helpers/ConversationHelper";
 
 export const CreateConversationController: RequestHandler = async (
   req,
@@ -254,6 +255,32 @@ export const ReadMessageController: RequestHandler = async (req, res) => {
     await message.updateOne({ read: true });
 
     res.status(200).json({ message: "Message read successfully!" });
+  } catch (e) {
+    ErrorResponse(res, 500, e);
+  }
+};
+
+export const GetConversationVideoTokenController: RequestHandler = async (
+  req,
+  res
+) => {
+  try {
+    const user = res.locals.user;
+    const conversationId = req.params.id;
+
+    const conversation = await ConversationModel.findOne({
+      _id: conversationId,
+      members: { $in: [user._id] },
+    });
+
+    if (!conversation) {
+      res.status(404).json({ message: "Conversation not found!" });
+      return;
+    }
+
+    const token = await personalVideoToken(conversationId, user._id.toString());
+
+    res.status(200).json({ message: "Token generated!", token });
   } catch (e) {
     ErrorResponse(res, 500, e);
   }

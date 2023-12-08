@@ -40,6 +40,11 @@ const Conservation = (user: Router) => {
     AuthenticateUser,
     Controllers.ReadMessageController
   );
+  conservation.get(
+    "/video/:id",
+    AuthenticateUser,
+    Controllers.GetConversationVideoTokenController
+  );
   // conservation.delete("/:id", Controllers.DeleteConservationController);
 };
 
