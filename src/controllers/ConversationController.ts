@@ -278,7 +278,10 @@ export const GetConversationVideoTokenController: RequestHandler = async (
       return;
     }
 
-    const token = await personalVideoToken(conversationId, user._id.toString());
+    const token = await personalVideoToken(
+      conversation._id.toString(),
+      user._id.toString()
+    );
 
     res.status(200).json({ message: "Token generated!", token });
   } catch (e) {

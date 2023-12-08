@@ -237,7 +237,7 @@ const GetConversationVideoTokenController = async (req, res) => {
             res.status(404).json({ message: "Conversation not found!" });
             return;
         }
-        const token = await (0, ConversationHelper_1.personalVideoToken)(conversationId, user._id.toString());
+        const token = await (0, ConversationHelper_1.personalVideoToken)(conversation._id.toString(), user._id.toString());
         res.status(200).json({ message: "Token generated!", token });
     }
     catch (e) {
