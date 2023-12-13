@@ -3,7 +3,10 @@ import { ErrorResponse } from "../helpers/ErrorHelper";
 import UserModel from "../models/User";
 import { ConversationModel, MessageModel } from "../models/Conversation";
 import { firestoreDb } from "../config/Firebase";
-import { personalVideoToken } from "../helpers/ConversationHelper";
+import {
+  encryptMessage,
+  personalVideoToken,
+} from "../helpers/ConversationHelper";
 
 export const CreateConversationController: RequestHandler = async (
   req,
@@ -194,9 +197,13 @@ export const SendMessageController: RequestHandler = async (req, res) => {
       return;
     }
 
+    const encryptedMessage = encryptMessage(message);
+
+    console.log(encryptedMessage);
+
     const newMessage = await MessageModel.create({
       conversationId,
-      message,
+      message: encryptedMessage,
       messageMedia,
       sender: user._id,
       reciever: reciever._id,
@@ -211,7 +218,7 @@ export const SendMessageController: RequestHandler = async (req, res) => {
       .doc(conversationId);
 
     await conversationRef.collection("messages").add({
-      message,
+      message: encryptedMessage,
       messageMedia,
       messageId: newMessage._id.toString(),
       sender: user._id.toString(),
