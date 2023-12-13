@@ -169,7 +169,7 @@ const SendMessageController = async (req, res) => {
         }
         const newMessage = await Conversation_1.MessageModel.create({
             conversationId,
-            message,
+            message: message,
             messageMedia,
             sender: user._id,
             reciever: reciever._id,
@@ -181,7 +181,7 @@ const SendMessageController = async (req, res) => {
             .collection("conversations")
             .doc(conversationId);
         await conversationRef.collection("messages").add({
-            message,
+            message: message,
             messageMedia,
             messageId: newMessage._id.toString(),
             sender: user._id.toString(),

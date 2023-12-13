@@ -173,7 +173,7 @@ const SendMessageToGroupConversationController = async (req, res) => {
             .doc(groupConversation._id.toString());
         await groupConversationRef.collection("groupMessages").add({
             groupMessageId: groupMessage._id.toString(),
-            groupMessage: groupMessage.message,
+            groupMessage: message,
             messageMedia: groupMessage.messageMedia,
             readBy: [],
             sender: groupMessage.sender.toString(),
