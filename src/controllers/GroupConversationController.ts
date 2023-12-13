@@ -7,7 +7,7 @@ import {
   GroupConversationModel,
 } from "../models/GroupConversation";
 import firebase from "firebase/compat/app";
-import { encryptMessage, videoToken } from "../helpers/ConversationHelper";
+import { videoToken } from "../helpers/ConversationHelper";
 
 export const AdminCreateGroupConversationController: RequestHandler = async (
   req,
@@ -205,11 +205,9 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
       return;
     }
 
-    const encryptedMessage = encryptMessage(message);
-
     const groupMessage = await GroupConversationMessageModel.create({
       groupId: groupConversation._id,
-      message: encryptedMessage,
+      message: message,
       messageMedia: messageMedia,
       sender: user._id,
     });
@@ -220,7 +218,7 @@ export const SendMessageToGroupConversationController: RequestHandler = async (
 
     await groupConversationRef.collection("groupMessages").add({
       groupMessageId: groupMessage._id.toString(),
-      groupMessage: encryptedMessage,
+      groupMessage: message,
       messageMedia: groupMessage.messageMedia as string[],
       readBy: [] as string[],
       sender: groupMessage.sender.toString(),
