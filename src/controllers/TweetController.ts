@@ -19,7 +19,7 @@ export const AddTweetController: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (filterTweet(title).includes("🤐")) {
+    if (filterTweet(title).includes("+^+")) {
       res.status(400).json({ message: "Tweet contains bad words!" });
       return;
     }
@@ -102,7 +102,7 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (filterTweet(title).includes("🤐")) {
+    if (filterTweet(title).includes("+^+")) {
       res.status(400).json({ message: "Tweet contains bad words!" });
       return;
     }
