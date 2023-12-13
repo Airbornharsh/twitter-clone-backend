@@ -45,6 +45,5 @@ export const isOtherUserAuthorised = (user: any, otherUser: any) => {
 };
 
 export const filterTweet = (tweet: string) => {
-  console.log(filter.clean(tweet));
   return filter.clean(tweet);
 };
