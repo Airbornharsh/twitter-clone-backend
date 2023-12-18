@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 connectDB();
-AIModelInit();
+// AIModelInit();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
