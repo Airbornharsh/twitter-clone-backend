@@ -16,7 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-
+    "@tensorflow/tfjs": "^4.15.0",
+    "@tensorflow/tfjs-node": "^4.15.0",
     "@types/crypto-js": "^4.2.1",
     "agora-access-token": "^2.0.4",
     "axios": "^1.6.2",
