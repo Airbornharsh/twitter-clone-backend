@@ -17,14 +17,12 @@ const AddTweetController = async (req, res) => {
             res.status(400).json({ message: "Title is required!" });
             return;
         }
-        if ((0, TweetHelper_1.filterTweet)(title).includes("🤐")) {
-            res.status(400).json({ message: "Tweet contains bad words!" });
-            return;
-        }
         if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
             res.status(400).json({ message: "Media cannot be more than 4!" });
             return;
         }
+        if (await (0, TweetHelper_1.filterTweet)(res, title))
+            return;
         const tweet = await Tweet_1.default.create({
             userId: user._id,
             email: user.email,
@@ -88,10 +86,8 @@ const AddTweetReplyHandler = async (req, res) => {
             res.status(400).json({ message: "Title is required!" });
             return;
         }
-        if ((0, TweetHelper_1.filterTweet)(title).includes("🤐")) {
-            res.status(400).json({ message: "Tweet contains bad words!" });
+        if (await (0, TweetHelper_1.filterTweet)(res, title))
             return;
-        }
         if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
             res.status(400).json({ message: "Media cannot be more than 4!" });
             return;

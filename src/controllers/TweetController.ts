@@ -19,15 +19,12 @@ export const AddTweetController: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (filterTweet(title).includes("+^+")) {
-      res.status(400).json({ message: "Tweet contains bad words!" });
-      return;
-    }
-
     if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
       res.status(400).json({ message: "Media cannot be more than 4!" });
       return;
     }
+
+    if (await filterTweet(res, title)) return;
 
     const tweet = await TweetModel.create({
       userId: user._id,
@@ -102,10 +99,7 @@ export const AddTweetReplyHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (filterTweet(title).includes("+^+")) {
-      res.status(400).json({ message: "Tweet contains bad words!" });
-      return;
-    }
+    if (await filterTweet(res, title)) return;
 
     if (tweetMedia && typeof tweetMedia !== "object" && tweetMedia.length > 4) {
       res.status(400).json({ message: "Media cannot be more than 4!" });
